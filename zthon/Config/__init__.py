@@ -21,6 +21,7 @@ class Config:
     COMMAND_HAND_LER = False
     GENIUS_API_TOKEN = os.environ.get("GENIUS_API_TOKEN", "FAKE_GENIUS_TOKEN")
     UPSTREAM_REPO = os.environ.get("UPSTREAM_REPO", "FAKE_UPSTREAM_REPO")
+PM_LOGGER_GROUP_ID = int(os.environ.get("PM_LOGGER_GROUP_ID", -100))
 
 class Zedub:
     pass 
