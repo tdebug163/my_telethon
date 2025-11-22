@@ -28,7 +28,7 @@ services:
         value: Asia/Amman
       - key: PYTHON_VERSION
         value: 3.10.9
-      - key: DATABASE_URL
+      - key: DB_URI
         fromDatabase:
           name: refz
           property: connectionString   
