@@ -32,4 +32,8 @@ services:
         fromDatabase:
           name: refz
           property: connectionString   
+      - key: HEROKU_API_KEY
+   value: "FAKE_KEY_TO_BYPASS_HEROKU"
+   - key: HEROKU_APP_NAME
+  value: "FAKE_APP_NAME"
     autoDeploy: false
