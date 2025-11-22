@@ -8,7 +8,7 @@ services:
     plan: free
     name: fefz
     env: python
-    buildCommand: pip install -U -r requirements.txt
+    buildCommand: pip install  -r requirements.txt
     startCommand: python3 server.py & python3 -m zthon
     region: frankfurt
     envVars:
