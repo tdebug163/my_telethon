@@ -14,6 +14,6 @@ class Config:
     PRIVATE_GROUP_BOT_API_ID = int(os.environ.get("PRIVATE_GROUP_BOT_API_ID", -100))
 HEROKU_API_KEY = os.environ.get("HEROKU_API_KEY", "FAKE_KEY_TO_BYPASS_HEROKU")
 HEROKU_APP_NAME = os.environ.get("HEROKU_APP_NAME", "FAKE_APP_NAME")
-COMMAND_HANDLER = True
+COMMAND_HAND_LER = False 
 class Zedub:
     pass 
