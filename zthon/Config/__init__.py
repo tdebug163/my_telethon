@@ -1,4 +1,9 @@
 import os
+# Brute force patch to fix missing attributes
+from .Config import Config
+Config.HEROKU_API_KEY = getattr(Config, 'HEROKU_API_KEY', "FAKE_KEY_TO_BYPASS_HEROKU")
+Config.HEROKU_APP_NAME = getattr(Config, 'HEROKU_APP_NAME', "FAKE_APP_NAME")
+Config.COMMAND_HAND_LER = getattr(Config, 'COMMAND_HAND_LER', False)
 from dotenv import load_dotenv
 
 load_dotenv()
