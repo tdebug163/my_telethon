@@ -7,7 +7,7 @@ import requests
 from ...Config import Config
 from .utils import get_readable_time
 
-Heroku = heroku3.from_key(Config.HEROKU_API_KEY)
+#Heroku = heroku3.from_key(Config.HEROKU_API_KEY)
 heroku_api = "https://api.heroku.com"
 
 # UniBorg Telegram
