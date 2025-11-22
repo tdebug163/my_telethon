@@ -1,4 +1,4 @@
-FROM nikolaik/python-nodejs:python3.9-nodejs18
+FROM nikolaik/python-nodejs:python3.11-nodejs18
 RUN apt-get update -y && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends ffmpeg \
     && apt-get clean \
@@ -7,4 +7,4 @@ COPY . /app/
 WORKDIR /app/
 RUN pip3 install --upgrade pip
 RUN pip3 install -U pip && pip3 install -U -r requirements.txt
-CMD ["python3","-m","zthon"]
+CMD ["python3","-m","zthon"] 
