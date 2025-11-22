@@ -80,4 +80,4 @@ youtube_dl
 yt-dlp==2024.4.9
 img2html
 googletrans-py
-lxml>=5.0.0
+lxml[html_clean]
