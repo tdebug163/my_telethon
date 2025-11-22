@@ -31,6 +31,6 @@ class Config:
     WALL_API = os.environ.get("WALL_API", "FAKE_WALL_API")
     DEEPAI = os.environ.get("DEEPAI", "FAKE_DEEPAI")
     TIME_ZONE = os.environ.get("TIME_ZONE", "Asia/Amman")
-
+OWNER_ID = int(os.environ.get("OWNER_ID", 0))
 class Zedub:
     pass
