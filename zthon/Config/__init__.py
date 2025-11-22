@@ -20,6 +20,7 @@ class Config:
     # Variables to fix import/startup errors
     COMMAND_HAND_LER = False
     GENIUS_API_TOKEN = os.environ.get("GENIUS_API_TOKEN", "FAKE_GENIUS_TOKEN")
+UPSTREAM_REPO = os.environ.get("UPSTREAM_REPO", "FAKE_UPSTREAM_REPO")
 
     # Add other common variables with fake values to prevent future errors
     LYDIA_API_KEY = os.environ.get("LYDIA_API_KEY", "FAKE_LYDIA_KEY")
