@@ -1,3 +1,5 @@
+from zthon.Config import Config
+Config.COMMAND_HAND_LER = "."
 from telethon.tl.functions.messages import GetMessagesViewsRequest
 import sys, asyncio
 import zthon
