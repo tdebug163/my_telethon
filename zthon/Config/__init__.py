@@ -12,6 +12,7 @@ class Config:
     STRING_SESSION = os.environ.get("STRING_SESSION")
     TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN")
     PRIVATE_GROUP_BOT_API_ID = int(os.environ.get("PRIVATE_GROUP_BOT_API_ID", -100))
-
+HEROKU_API_KEY = os.environ.get("HEROKU_API_KEY", "FAKE_KEY_TO_BYPASS_HEROKU")
+HEROKU_APP_NAME = os.environ.get("HEROKU_APP_NAME", "FAKE_APP_NAME")
 class Zedub:
     pass 
