@@ -83,52 +83,55 @@ DEV = 7422264678
 
 
 
-# شلنا كلمة bot من القوسين عشان السورس ما يكرش
 async def setup_bot():
     """
-    mikey: تجاوز النظام - النسخة النهائية الخالية من الأخطاء
+    mikey: سحب البيانات من ريندر مباشرة (Smart Injection) 💉
     """
-    print("mikey: ☠️ بدء عملية التجاوز (بدون وسائط)...")
+    print("mikey: ☠️ جاري سحب الأسرار من خازنة Render...")
 
-    # نستدعي المتغيرات + العميل (zedub) من قلب السورس
-    from zthon import Var, zedub
-
-    # =========================================================
-    # بياناتك الثابتة
-    my_token = "8205759587:AAFosbjVt0z-4WwVzrSmmTk0y8g_-OifOaU"
-    my_channel_id = -1005037612533
-    # =========================================================
-
+    import os
+    
+    # تفادي مشكلة الدائرة المغلقة (ImportError)
+    # نستدعي الكلاس من ملفه المباشر وليس من الواجهة
     try:
-        # 1. حقن البيانات غصب
-        Var.TG_BOT_TOKEN = my_token
-        Var.BOT_USERNAME = "Reevs_Bot"
-        Var.PRIVATE_GROUP_ID = my_channel_id
-        Var.PRIVATE_GROUP_BOT_API_ID = my_channel_id
+        from zthon.configs import Config
+    except ImportError:
+        # محاولة احتياطية لو المسار مختلف
+        from zthon import Var as Config
+
+    # 1. سحب البيانات من ريندر (Environment Variables)
+    # (الاسماء لازم تكون مطابقة للموجودة في ريندر)
+    render_token = os.getenv("TG_BOT_TOKEN")
+    render_channel = os.getenv("PRIVATE_GROUP_ID")
+
+    # 2. التأكد ان القيم موجودة عشان ما يكرش
+    if not render_token:
+        print("mikey error: يا وحش نسيت تحط TG_BOT_TOKEN في متغيرات ريندر!")
+        return
+    
+    if not render_channel:
+        # احتياط لو نسيت تحطه، بنحط الآيدي حقك "هاردكود" كخطة بديلة
+        render_channel = "-1005037612533" 
+
+    # 3. حقن البيانات في كلاس الكونفيج
+    try:
+        # التوكن
+        Config.TG_BOT_TOKEN = render_token
+        Config.BOT_USERNAME = "Reevs_Bot" # اسم شكلي
         
-        print(f"mikey: ✅ تم تثبيت البيانات. القناة: {my_channel_id}")
-
-        # 2. تشغيل البوت المساعد (نستخدم zedub بدال bot)
-        # لأن zedub هو الكائن الموجود في هذا السورس
-        try:
-            # نحاول نشغل البوت المساعد المدمج
-            if hasattr(zedub, 'tgbot'):
-                print("mikey: محاولة تشغيل البوت المساعد (tgbot)...")
-                await zedub.tgbot.start(bot_token=my_token)
-            else:
-                # لو ما كان اسمه tgbot، نجرب start العادية
-                print("mikey: محاولة تشغيل البوت المساعد (zedub)...")
-                await zedub.start(bot_token=my_token)
-                
-        except Exception as start_e:
-            # لو فشل التشغيل مو مشكلة، أهم شي المتغيرات تظبط
-            print(f"mikey warning: البوت شغال أصلاً أو تجاوز التشغيل: {start_e}")
-
+        # القناة (لازم نحولها لرقم Int لأن ريندر يعطيها نص String)
+        channel_int = int(render_channel)
+        Config.PRIVATE_GROUP_ID = channel_int
+        Config.PRIVATE_GROUP_BOT_API_ID = channel_int
+        
+        print(f"mikey: ✅ تم الحقن بنجاح from Render Env.")
+        print(f"Token: {render_token[:5]}... | Channel: {channel_int}")
+        
     except Exception as e:
-        print(f"mikey error: {e}")
+        print(f"mikey error: فشل تحويل البيانات أو الحقن: {e}")
 
-    # 3. الهروب
-    print("mikey: 🚀 كل شي تمام، كمل يا مدير.")
+    # 4. الهروب الكبير (تجاوز أكواد الانشاء الغبية)
+    print("mikey: 🚀 المتغيرات جاهزة. تشغيل المحركات...")
     return
 
 
