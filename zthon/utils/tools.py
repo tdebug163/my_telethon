@@ -5,7 +5,7 @@ async def create_supergroup(group_name, client, botusername, descript, photo):
     print(f"mikey: تجاوزنا الانشاء وبنستخدم القناة الجاهزة: -1005037612533")
     
     # الآيدي اللي انت تبيه (مجموعة التخزين)
-    saved_channel_id = -1005037612533
+    saved_channel_id = -1003477023425
     
     # نرجع له (None) بدال الكائن المعقد، و (الآيدي) اللي يهمه
     # كذا السورس ياخذ الرقم وينطم ويكمل تشغيل
