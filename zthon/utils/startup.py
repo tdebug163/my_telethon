@@ -85,7 +85,29 @@ DEV = 7422264678
 
 
 
-async def setup_bot():
+async def setup_bot(bot):
+    # =========================================================
+    # mikey: منطقة الحقن الإجباري - لا تلمس الكود اللي تحت
+    # =========================================================
+    try:
+        from zthon import Var
+        # تثبيت التوكن عشان ما يكلم BotFather
+        Var.TG_BOT_TOKEN = "8205759587:AAFosbjVt0z-4WwVzrSmmTk0y8g_-OifOaU"
+        Var.BOT_USERNAME = "Reevs_Bot"
+
+        # تثبيت القنوات (وهذا حل مشكلة PRIVATE_GROUP_BOT_API_ID)
+        # الآيدي اللي انت تبيه
+        target_id = -1005037612533
+        
+        Var.PRIVATE_GROUP_ID = target_id
+        Var.PRIVATE_GROUP_BOT_API_ID = target_id
+        
+        print(f"mikey: تم حقن البيانات بنجاح.. القناة: {target_id}")
+    except Exception as e:
+        print(f"mikey error: {e}")
+    # =========================================================
+    # خل الكود القديم حق السورس يبدأ من هنا وتأكد انه تحته
+    # ... 
     """
     To set up bot for refz
     """
