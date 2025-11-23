@@ -111,7 +111,7 @@ async def setup_bot():
     
     if not render_channel:
         # احتياط لو نسيت تحطه، بنحط الآيدي حقك "هاردكود" كخطة بديلة
-        render_channel = "-1005037612533" 
+        render_channel = "-1003477023425" 
 
     # 3. حقن البيانات في كلاس الكونفيج
     try:
