@@ -29,7 +29,7 @@ from telethon.tl.functions.channels import JoinChannelRequest
 
 
 
-from zthon import BOTLOG, BOTLOG_CHATID, PM_LOGGER_GROUP_ID
+
 
 
 
@@ -82,58 +82,48 @@ bot = zedub
 DEV = 7422264678
 
 
-
 async def setup_bot():
     """
-    mikey: سحب البيانات من ريندر مباشرة (Smart Injection) 💉
+    mikey: كسر الدوامة بالاستدعاء المباشر من المصدر
     """
-    print("mikey: ☠️ جاري سحب الأسرار من خازنة Render...")
+    print("mikey: ☠️ الدخول لغرفة التحكم بدون إثارة الشبهات...")
 
     import os
     
-    # تفادي مشكلة الدائرة المغلقة (ImportError)
-    # نستدعي الكلاس من ملفه المباشر وليس من الواجهة
+    # هنا السر: نستدعي (Config) من ملفه الأصلي وليس من (zthon)
+    # هذا يمنع الـ Circular Import 100%
     try:
         from zthon.configs import Config
     except ImportError:
-        # محاولة احتياطية لو المسار مختلف
-        from zthon import Var as Config
+        # احتياط لو اسم الملف مختلف في هذا السورس
+        from zthon.config import Config
 
-    # 1. سحب البيانات من ريندر (Environment Variables)
-    # (الاسماء لازم تكون مطابقة للموجودة في ريندر)
-    render_token = os.getenv("TG_BOT_TOKEN")
-    render_channel = os.getenv("PRIVATE_GROUP_ID")
+    # سحب المتغيرات من ريندر (بيئة النظام)
+    # لازم تكون حاط TG_BOT_TOKEN و PRIVATE_GROUP_ID في ريندر
+    token = os.getenv("TG_BOT_TOKEN")
+    channel_id = os.getenv("PRIVATE_GROUP_ID")
 
-    # 2. التأكد ان القيم موجودة عشان ما يكرش
-    if not render_token:
-        print("mikey error: يا وحش نسيت تحط TG_BOT_TOKEN في متغيرات ريندر!")
-        return
-    
-    if not render_channel:
-        # احتياط لو نسيت تحطه، بنحط الآيدي حقك "هاردكود" كخطة بديلة
-        render_channel = "-1003477023425" 
+    # الحقن المباشر
+    if token:
+        Config.TG_BOT_TOKEN = token
+        Config.BOT_USERNAME = "Reevs_Bot" # شكليات
+        print(f"mikey: ✅ التوكن تم سحبه وحقنه: {token[:5]}...")
+    else:
+        print("mikey: ⚠️ تنبيه! ما لقيت التوكن في متغيرات ريندر!")
 
-    # 3. حقن البيانات في كلاس الكونفيج
-    try:
-        # التوكن
-        Config.TG_BOT_TOKEN = render_token
-        Config.BOT_USERNAME = "Reevs_Bot" # اسم شكلي
-        
-        # القناة (لازم نحولها لرقم Int لأن ريندر يعطيها نص String)
-        channel_int = int(render_channel)
-        Config.PRIVATE_GROUP_ID = channel_int
-        Config.PRIVATE_GROUP_BOT_API_ID = channel_int
-        
-        print(f"mikey: ✅ تم الحقن بنجاح from Render Env.")
-        print(f"Token: {render_token[:5]}... | Channel: {channel_int}")
-        
-    except Exception as e:
-        print(f"mikey error: فشل تحويل البيانات أو الحقن: {e}")
+    if channel_id:
+        try:
+            # تحويل النص لرقم ضروري
+            c_id = int(channel_id)
+            Config.PRIVATE_GROUP_ID = c_id
+            Config.PRIVATE_GROUP_BOT_API_ID = c_id
+            print(f"mikey: ✅ القناة تم تثبيتها: {c_id}")
+        except ValueError:
+            print("mikey: ⚠️ خطأ في صيغة آيدي القناة في ريندر (تأكد انها ارقام)")
 
-    # 4. الهروب الكبير (تجاوز أكواد الانشاء الغبية)
-    print("mikey: 🚀 المتغيرات جاهزة. تشغيل المحركات...")
+    # الهروب السريع
+    print("mikey: 🚀 انتهى الحقن. السورس بيكمل طبيعي.")
     return
-
 
 async def startupmessage():
 
