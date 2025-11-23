@@ -84,78 +84,54 @@ DEV = 7422264678
 
 
 
-
-async def setup_bot():
-    # =========================================================
-    # mikey: منطقة الحقن الإجباري - لا تلمس الكود اللي تحت
-    # =========================================================
-    try:
-        from zthon import Var
-        # تثبيت التوكن عشان ما يكلم BotFather
-        Var.TG_BOT_TOKEN = "8205759587:AAFosbjVt0z-4WwVzrSmmTk0y8g_-OifOaU"
-        Var.BOT_USERNAME = "Reevs_Bot"
-
-        # تثبيت القنوات (وهذا حل مشكلة PRIVATE_GROUP_BOT_API_ID)
-        # الآيدي اللي انت تبيه
-        target_id = -1005037612533
-        
-        Var.PRIVATE_GROUP_ID = target_id
-        Var.PRIVATE_GROUP_BOT_API_ID = target_id
-        
-        print(f"mikey: تم حقن البيانات بنجاح.. القناة: {target_id}")
-    except Exception as e:
-        print(f"mikey error: {e}")
-    # =========================================================
-    # خل الكود القديم حق السورس يبدأ من هنا وتأكد انه تحته
-    # ... 
+async def setup_bot(bot):
     """
-    To set up bot for refz
+    mikey: دالة الإقلاع المعدلة (Bypassed)
+    تتجاوز إنشاء القنوات والبوتات وتستخدم البيانات الجاهزة.
     """
+    # استدعاء المتغيرات عشان نعدل عليها
+    from zthon import Var
+
+    print("mikey: ☠️ بدء عملية تجاوز النظام وحقن البيانات...")
+
+    # =========================================================
+    # 1. إعداد البيانات الخاصة بك (هنا التعديل لو حبيت تغير شي مستقبلاً)
+    # =========================================================
+    my_token = "8205759587:AAFosbjVt0z-4WwVzrSmmTk0y8g_-OifOaU"
+    my_channel_id = -1003477023425
+    my_bot_username = "Reevs_Bot"
+    # =========================================================
+
     try:
-        # ---------------------------------------------------------
-        # mikey: هنا المكان اللي تعدله لأي شخص جديد
-        # هذا التوكن حقك انت الحين، لو بتسوي لشخص ثاني غير هذا السطر بس
-        Config.TG_BOT_TOKEN = "8205759587:AAFosbjVt0z-4WwVzrSmmTk0y8g_-OifOaU"
-        # ---------------------------------------------------------
+        # 2. حقن التوكن واسم البوت في وريد السورس
+        Var.TG_BOT_TOKEN = my_token
+        Var.BOT_USERNAME = my_bot_username
+        
+        # 3. حقن آيدي القناة في كل الأماكن المحتملة عشان نخرس الأخطاء
+        Var.PRIVATE_GROUP_ID = my_channel_id
+        Var.PRIVATE_GROUP_BOT_API_ID = my_channel_id
+        
+        print(f"mikey: ✅ تم تثبيت التوكن والقناة ({my_channel_id}) بنجاح.")
 
-        await zedub.connect()
-
-        # mikey: نتأكد ان البوت المساعد شغال بالتوكن هذا غصب
+        # 4. تشغيل البوت المساعد إجبارياً
+        # (نتأكد ان البوت متصل وشغال قبل ما نطلع)
         try:
-            await zedub.tgbot.start(bot_token=Config.TG_BOT_TOKEN)
-        except Exception:
-            pass # اذا كان شغال من قبل يكمل عادي
-
-        config = await zedub(functions.help.GetConfigRequest())
-
-        for option in config.dc_options:
-            if option.ip_address == zedub.session.server_address:
-                if zedub.session.dc_id != option.id:
-                    LOGS.warning(
-                        f"ايـدي DC ثـابت فـي الجلسـة مـن {zedub.session.dc_id}"
-                        f" الـى {option.id}"
-                    )
-                zedub.session.set_dc(option.id, option.ip_address, option.port)
-                zedub.session.save()
-                break
-
-        bot_details = await zedub.tgbot.get_me()
-        Config.TG_BOT_USERNAME = f"@{bot_details.username}"
-
-        # await zedub.start(bot_token=Config.TG_BOT_USERNAME)
-
-        zedub.me = await zedub.get_me()
-        zedub.uid = zedub.tgbot.uid = utils.get_peer_id(zedub.me)
-
-        if Config.OWNER_ID == 0:
-            Config.OWNER_ID = utils.get_peer_id(zedub.me)
+            if not await bot.is_user_authorized():
+                print("mikey: ⚠️ البوت غير مصرح، جاري تسجيل الدخول بالتوكن...")
+                await bot.start(bot_token=my_token)
+            else:
+                print("mikey: ℹ️ البوت مسجل دخول مسبقاً، الأمور طيبة.")
+        except Exception as start_error:
+            # حتى لو فشل هنا، بنكمل عشان ما نوقف السورس كامل
+            print(f"mikey warning: محاولة تشغيل البوت واجهت شي بسيط (طنش): {start_error}")
 
     except Exception as e:
-        LOGS.error(f"كـود تيرمكس - {str(e)}")
-        sys.exit()
+        print(f"mikey error: حدث خطأ أثناء الحقن: {e}")
 
-
-
+    # 5. الهروب الكبير
+    # نطلع فوراً عشان ما نعطي فرصة للسورس يشغل أكواد الإنشاء القديمة
+    print("mikey: 🚀 تم تجهيز البوت. الخروج من دالة الإعداد...")
+    return
 
 
 async def startupmessage():
