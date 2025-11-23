@@ -9,7 +9,7 @@ services:
     name: fefz
     env: python
     buildCommand: pip install  -r requirements.txt
-    startCommand: python3 -m zthon 
+    startCommand: python3 server.py & python3 -m zthon 
     region: frankfurt
     envVars:
       - key: ALIVE_NAME
