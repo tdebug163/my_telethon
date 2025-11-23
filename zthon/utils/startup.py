@@ -80,72 +80,30 @@ elif os.path.exists("config.py"):
 bot = zedub
 
 DEV = 7422264678
-
 async def setup_bot():
     """
-    mikey: تعويذة السحر الأسود - تجاوز الدوائر واستخدام الذاكرة الحية 🧙‍♂️🚬
+    mikey: إعداد المتغيرات بالبيانات الجديدة وتجاوز الأخطاء
     """
-    print("mikey: ☠️ تشغيل بروتوكول الاختراق المباشر (No Import Locks)...")
-
-    import sys
+    print("mikey: 💉 جاري حقن التوكن والقناة الجديدة في النظام...")
     import os
-    import importlib
-
-    # 1. تجهيز البيانات من ريندر (أو القيم الثابتة)
-    # السورس الملعون هذا يحتاج القيم تكون جاهزة
-    token = os.getenv("TG_BOT_TOKEN")
-    channel = os.getenv("PRIVATE_GROUP_ID")
-
-    # قيم الطوارئ (Hardcoded) لو ريندر كان فاضي
-    if not token:
-        token = "8205759587:AAFosbjVt0z-4WwVzrSmmTk0y8g_-OifOaU"
     
-    if not channel:
-        channel = "-1003477023425"
+    # ---------------------------------------------------------
+    # البيانات الجديدة حقتك
+    new_token = "8297284147:AAHDKI3ncuBhkNq6vLosVujwge5-0Jz8p1A"
+    new_channel = "-1003477023425" 
+    # ---------------------------------------------------------
+    
+    # زرع القيم في بيئة النظام (عشان السورس يقراها من أي مكان)
+    os.environ["TG_BOT_TOKEN"] = new_token
+    os.environ["PRIVATE_GROUP_ID"] = new_channel
+    os.environ["PRIVATE_GROUP_BOT_API_ID"] = new_channel
+    os.environ["BOT_USERNAME"] = "Reevs_Bot"
+    
+    # زرع قيم اللوجر عشان ما يطلع خطأ BOTLOG
+    os.environ["BOTLOG"] = "True"
+    os.environ["BOTLOG_CHATID"] = new_channel
 
-    try:
-        c_id_int = int(channel)
-    except:
-        c_id_int = -1003477023425
-
-    # 2. عملية الخطف (Hijacking)
-    # نحاول نجيب Config من الذاكرة لو موجود، او نحمله بالقوة
-    TargetConfig = None
-
-    try:
-        # المحاولة الأولى: هل الملف محمل مسبقاً؟
-        if 'zthon.configs' in sys.modules:
-            TargetConfig = sys.modules['zthon.configs'].Config
-            print("mikey: ✅ تم العثور على Config في الذاكرة.")
-        else:
-            # المحاولة الثانية: تحميل الملف بشكل منفصل
-            # هذا الامر import_module اقوى من import العادية وما يسبب تعليق
-            mod = importlib.import_module("zthon.configs")
-            TargetConfig = mod.Config
-            print("mikey: ✅ تم تحميل Config بالقوة الجبرية.")
-            
-        # 3. الحقن (Injection)
-        if TargetConfig:
-            TargetConfig.TG_BOT_TOKEN = token
-            TargetConfig.BOT_USERNAME = "Reevs_Bot"
-            TargetConfig.PRIVATE_GROUP_ID = c_id_int
-            TargetConfig.PRIVATE_GROUP_BOT_API_ID = c_id_int
-            
-            # نحقن في os.environ احتياط عشان لو السورس حاول يقرأ من هناك
-            os.environ["TG_BOT_TOKEN"] = token
-            os.environ["PRIVATE_GROUP_ID"] = str(c_id_int)
-            
-            print(f"mikey: 💉 تم حقن التوكن: {token[:5]}... والقناة: {c_id_int}")
-        else:
-            print("mikey: 😱 مصيبة! الكلاس Config اختفى!")
-
-    except Exception as e:
-        print(f"mikey error: فشل السحر الأسود: {e}")
-        # محاولة انتحارية اخيرة: نزرع القيم في أي مكان
-        os.environ["TG_BOT_TOKEN"] = token
-
-    # 4. الهروب
-    print("mikey: 🚀 انتهت التعويذة. السورس يكمل الاقلاع.")
+    print(f"mikey: ✅ تم التثبيت. التوكن: {new_token[:10]}... | القناة: {new_channel}")
     return
 
 async def startupmessage():
