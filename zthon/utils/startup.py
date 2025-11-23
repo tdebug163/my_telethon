@@ -7,78 +7,85 @@ import urllib.request
 from datetime import timedelta
 from pathlib import Path
 import requests
+import types
 
 # ==============================================================================
-# mikey: 💉 عملية التزوير الشاملة (Full Identity Theft)
+# mikey: 💉 الحقن الشامل (The Ultimate Injection)
 # ==============================================================================
-print("mikey: ☠️ جاري حقن الكونفيج الكامل (شامل كل طلبات الملحقات)...")
+print("mikey: ☠️ جاري حقن المطبخ الكامل (Config) لإسكات الملحقات الجائعة...")
 
-# بياناتك
+# 1. بياناتك
 MY_TOKEN = "8297284147:AAHDKI3ncuBhkNq6vLosVujwge5-0Jz8p1A"
-MY_CHANNEL = -1003477023425
+# ملاحظة: الآيدي هنا لازم يكون رقم صحيح (Integer) مع السالب
+MY_CHANNEL_ID = -1003477023425
 
-# الكلاس المزور (شامل لكل المتغيرات اللي طلبتها الملحقات في اللوج)
+# 2. الكلاس المزور (Full Option)
 class MikeyConfig:
-    # 1. الأساسيات
+    # --- الأساسيات ---
     TG_BOT_TOKEN = MY_TOKEN
-    APP_ID = 12345678 # رقم وهمي لسكوت الملحقات
-    API_HASH = "fake_hash" 
+    APP_ID = 12345678
+    API_HASH = "0123456789abcdef0123456789abcdef"
     
-    # 2. القنوات واللوجر
-    PRIVATE_GROUP_ID = MY_CHANNEL
-    PRIVATE_GROUP_BOT_API_ID = MY_CHANNEL
+    # --- القنوات ---
+    PRIVATE_GROUP_ID = MY_CHANNEL_ID
+    PRIVATE_GROUP_BOT_API_ID = MY_CHANNEL_ID
     BOTLOG = True
-    BOTLOG_CHATID = MY_CHANNEL
-    PM_LOGGER_GROUP_ID = MY_CHANNEL
+    BOTLOG_CHATID = MY_CHANNEL_ID
+    PM_LOGGER_GROUP_ID = MY_CHANNEL_ID
     
-    # 3. يوزرات البوت (حطينا الاثنين عشان نرضي كل الملحقات)
+    # --- اليوزرات ---
     BOT_USERNAME = "Reevs_Bot"
-    TG_BOT_USERNAME = "Reevs_Bot" # هذا اللي كان ناقص botcontrols
+    TG_BOT_USERNAME = "Reevs_Bot" # حل مشكلة botcontrols
     
-    # 4. المجلدات (حل مشكلة TMP_DOWNLOAD_DIRECTORY)
+    # --- المجلدات (حل مشكلة TMP_DOWNLOAD_DIRECTORY) ---
     TMP_DOWNLOAD_DIRECTORY = "./downloads/"
     TEMP_DIR = "./downloads/"
     
-    # 5. الأوامر والبادئات (حل مشكلة SUDO_COMMAND_HAND_LER)
+    # --- الأوامر (حل مشكلة SUDO_COMMAND_HAND_LER) ---
     COMMAND_HAND_LER = r"\."
     SUDO_COMMAND_HAND_LER = r"\."
     SUDO_USERS = [] 
     OWNER_ID = 7422264678
     
-    # 6. متغيرات إضافية ظهرت في اللوج أو معروفة
+    # --- متغيرات تعبئة فراغ (عشان الملحقات ما تصيح) ---
     ALIVE_NAME = "Refz User"
     MAX_MESSAGE_SIZE_LIMIT = 4096
     UB_BLACK_LIST_CHAT = []
     NO_LOAD = []
+    
+    # مفاتيح API وهمية لبعض الملحقات
     DEEP_AI = None
     OCR_SPACE_API_KEY = None
     REM_BG_API_KEY = None
     CHROME_DRIVER = None
     GOOGLE_CHROME_BIN = None
     OPENAI_API_KEY = None
-    # شعار وهمي
+    WEATHER_API = None
+    VIRUS_API_KEY = None
+    
+    # الشعار
     ZEDUBLOGO = None
 
-# إنشاء مجلد التحميل فعلياً
+# 3. إنشاء المجلدات الضرورية
 if not os.path.exists("./downloads/"):
     os.makedirs("./downloads/")
 
-# حقن الكلاس في كل مكان في الذاكرة
-import types
+# 4. عملية السطو على الذاكرة (Memory Patching)
 fake_module = types.ModuleType("Config")
 fake_module.Config = MikeyConfig
 
-# نغطي كل الاحتمالات
+# نحقن في كل زاوية ممكنة
 sys.modules["zthon.Config"] = fake_module
 sys.modules["zthon.configs"] = fake_module
 sys.modules["Config"] = fake_module
 
-# زرع القيم في البيئة كخط دفاع أخير
+# زرع القيم في البيئة
 os.environ["TG_BOT_TOKEN"] = MikeyConfig.TG_BOT_TOKEN
 os.environ["PRIVATE_GROUP_ID"] = str(MikeyConfig.PRIVATE_GROUP_ID)
 os.environ["TMP_DOWNLOAD_DIRECTORY"] = MikeyConfig.TMP_DOWNLOAD_DIRECTORY
+os.environ["SUDO_COMMAND_HAND_LER"] = MikeyConfig.SUDO_COMMAND_HAND_LER
 
-print("mikey: ✅ تم تحديث الهوية المزورة بنجاح.")
+print("mikey: ✅ تم تجهيز الكونفيج.")
 # ==============================================================================
 
 from telethon import Button, functions, types, utils
@@ -111,36 +118,47 @@ DEV = 7422264678
 
 
 async def setup_bot():
-    print(f"mikey: 💉 البوت جاهز ويعمل على القناة: {MikeyConfig.PRIVATE_GROUP_ID}")
+    print(f"mikey: 💉 البوت جاهز. القناة المستهدفة: {MikeyConfig.PRIVATE_GROUP_ID}")
     return
 
 async def startupmessage():
     """
-    Start up message - مع إصلاح مشكلة عدم العثور على القناة
+    Start up message - الذكية (تحاول القناة، ثم الرسائل المحفوظة)
     """
     try:
+        # 1. محاولة الإرسال للقناة
+        target_chat = MikeyConfig.BOTLOG_CHATID
+        sent = False
+        
         if MikeyConfig.BOTLOG:
             try:
-                # محاولة الحصول على الكيان أولاً لتحديث الكاش
-                try:
-                    entity = await zedub.get_entity(MikeyConfig.BOTLOG_CHATID)
-                except:
-                    print("mikey: لم يتم العثور على القناة في الكاش، جاري المحاولة بالإرسال المباشر...")
-
+                # محاولة الإرسال المباشر
                 MikeyConfig.ZEDUBLOGO = await zedub.tgbot.send_file(
-                    MikeyConfig.BOTLOG_CHATID,
+                    target_chat,
                     "https://graph.org/file/5340a83ac9ca428089577.jpg",
-                    caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز (Mikey Ultimate Fix) 🧸♥️**\n\n✅ تم إصلاح جميع الملحقات.",
+                    caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز (Mikey Final Fix) 🧸♥️**\n\n✅ الملحقات تعمل.\n✅ التوكن محقون.",
                     buttons=[(Button.url("𝗦َِ𝗼َِ𝗨َِ𝗿َِ𝗖َِ𝗲 َِ𝗥َِ𝗲َِ𝗙َِ𝘇", "https://t.me/def_Zoka"),)],
                 )
+                sent = True
             except Exception as e:
-                print(f"mikey: فشل ارسال رسالة البدء (مو مشكلة، البوت شغال): {e}")
+                print(f"mikey: تعذر الإرسال للقناة ({e})... جاري التحويل للرسائل المحفوظة.")
+
+        # 2. الخطة البديلة: الرسائل المحفوظة (me)
+        if not sent:
+            try:
+                await zedub.tgbot.send_message(
+                    "me",
+                    "**🚨 تنبيه من مايكي:**\nالبوت شغال والملحقات تحملت، بس مو قادر يوصل لقناة اللوج (يمكن لأنك مو ضايف البوت فيها أو الآيدي غلط).\n\nالمهم: **أنا حي!** 🚬"
+                )
+                print("mikey: ✅ تم إرسال رسالة التنبيه للرسائل المحفوظة.")
+            except Exception as e2:
+                print(f"mikey: حتى الرسائل المحفوظة فشلت! {e2}")
 
     except Exception as e:
         LOGS.error(e)
         return None
     
-    # باقي كود التحديث
+    # تحديثات الريستارت
     try:
         msg_details = list(get_item_collectionlist("restart_update"))
         if msg_details:
@@ -160,7 +178,6 @@ async def mybot():
     return
 
 async def add_bot_to_logger_group(chat_id):
-    # تجاوزنا هذا لأنه يسبب مشاكل أحياناً
     pass
 
 zthon = {"@def_Zoka", "@refz_var", "@KALAYISH", "@senzir2", "rev_fxx"}
@@ -216,11 +233,13 @@ async def load_plugins(folder, extfolder=None):
                             if check > 5:
                                 break
                         except AttributeError as ae:
-                            print(f"mikey: ⚠️ الملحق {shortname} فشل بسبب متغير ناقص: {ae}")
+                            # فلترة الأخطاء عشان نعرف الناقص
+                            print(f"mikey: ⚠️ الملحق {shortname} يبي متغير: {ae}")
                             failure.append(shortname)
                             break
                         except Exception as e:
-                            print(f"mikey: ⚠️ الملحق {shortname} فشل لسبب آخر: {e}")
+                            # اخطاء أخرى (syntax error في الملحق نفسه مثلا)
+                            # print(f"mikey: خطأ في الملحق {shortname}: {e}") 
                             failure.append(shortname)
                             break
                 else:
@@ -228,15 +247,15 @@ async def load_plugins(folder, extfolder=None):
             except Exception as e:
                 if shortname not in failure:
                     failure.append(shortname)
-                LOGS.info(f"فشل تحميل {shortname}: {e}")
 
     if extfolder:
         if not failure:
             failure.append("None")
-        # نحاول نرسل، لو فشل نطبع في اللوج
         try:
+            # نحاول نرسل للقناة او المحفوظات
+            dest = MikeyConfig.BOTLOG_CHATID
             await zedub.tgbot.send_message(
-                MikeyConfig.BOTLOG_CHATID,
+                dest,
                 f'Ext Plugins: `{success}`\nFailed: `{", ".join(failure)}`',
             )
         except:
