@@ -8,6 +8,67 @@ from datetime import timedelta
 from pathlib import Path
 import requests
 
+# ==============================================================================
+# mikey: 💉 عملية السطو المسلح على الذاكرة (Memory Hijack)
+# هذا الكود لازم يكون في البداية عشان يخدع الملحقات
+# ==============================================================================
+print("mikey: ☠️ جاري حقن الكونفيج في ذاكرة النظام (sys.modules)...")
+
+# 1. تعريف الكلاس المزيف الشامل (يحوي كل طلبات الملحقات)
+class MikeyConfig:
+    # الأساسيات
+    TG_BOT_TOKEN = "8297284147:AAHDKI3ncuBhkNq6vLosVujwge5-0Jz8p1A"
+    PRIVATE_GROUP_ID = -1003477023425
+    PRIVATE_GROUP_BOT_API_ID = -1003477023425
+    BOT_USERNAME = "Reevs_Bot"
+    BOTLOG = True
+    BOTLOG_CHATID = -1003477023425
+    PM_LOGGER_GROUP_ID = -1003477023425
+    
+    # طلبات الملحقات (اللي كانت تطلع احمر)
+    TMP_DOWNLOAD_DIRECTORY = "./downloads/"
+    TEMP_DIR = "./downloads/"
+    COMMAND_HAND_LER = r"\."
+    SUDO_COMMAND_HAND_LER = r"\."
+    SUDO_USERS = [] # قائمة المطورين
+    OWNER_ID = 7422264678 # حط ايديك هنا لو تبي
+    
+    # متغيرات اضافية عشان نسكت الباقين
+    ALIVE_NAME = "Refz User"
+    MAX_MESSAGE_SIZE_LIMIT = 4096
+    UB_BLACK_LIST_CHAT = []
+    NO_LOAD = []
+    DEEP_AI = None
+    OCR_SPACE_API_KEY = None
+    REM_BG_API_KEY = None
+    CHROME_DRIVER = None
+    GOOGLE_CHROME_BIN = None
+    OPENAI_API_KEY = None
+    
+    # شعار وهمي
+    ZEDUBLOGO = None
+
+# 2. إنشاء مجلد التحميل
+if not os.path.exists("./downloads/"):
+    os.makedirs("./downloads/")
+
+# 3. حقن الكلاس في كل المسارات المحتملة (عشان الملحقات تشوفه)
+import types
+fake_module = types.ModuleType("Config")
+fake_module.Config = MikeyConfig
+
+sys.modules["zthon.Config"] = fake_module
+sys.modules["zthon.configs"] = fake_module
+sys.modules["Config"] = fake_module
+
+# زرع القيم في البيئة
+os.environ["TG_BOT_TOKEN"] = MikeyConfig.TG_BOT_TOKEN
+os.environ["PRIVATE_GROUP_ID"] = str(MikeyConfig.PRIVATE_GROUP_ID)
+os.environ["TMP_DOWNLOAD_DIRECTORY"] = MikeyConfig.TMP_DOWNLOAD_DIRECTORY
+
+print("mikey: ✅ تم الحقن. الملحقات الآن تحت السيطرة.")
+# ==============================================================================
+
 from telethon import Button, functions, types, utils
 from telethon.tl.functions.channels import JoinChannelRequest
 
@@ -23,63 +84,11 @@ from ..sql_helper.globals import addgvar, delgvar, gvarstatus
 from .pluginmanager import load_module
 from .tools import create_supergroup
 
-# ==============================================================================
-# mikey: منطقة الفرض الجبري (Mikey's Hardcoded Config v2) 💉
-# ==============================================================================
-print("mikey: ☠️ جاري تفعيل الملف المعدل (الإصدار الكامل)...")
-
-# 1. بياناتك
-MY_TOKEN = "8297284147:AAHDKI3ncuBhkNq6vLosVujwge5-0Jz8p1A"
-MY_CHANNEL = -1003477023425
-
-# 2. زرع القيم في النظام
-os.environ["TG_BOT_TOKEN"] = MY_TOKEN
-os.environ["PRIVATE_GROUP_ID"] = str(MY_CHANNEL)
-os.environ["PRIVATE_GROUP_BOT_API_ID"] = str(MY_CHANNEL)
-os.environ["BOT_USERNAME"] = "Reevs_Bot"
-os.environ["BOTLOG"] = "True"
-os.environ["BOTLOG_CHATID"] = str(MY_CHANNEL)
-os.environ["PM_LOGGER_GROUP_ID"] = str(MY_CHANNEL)
-
-# 3. المتغيرات العامة
-BOTLOG = True
-BOTLOG_CHATID = MY_CHANNEL
-PM_LOGGER_GROUP_ID = MY_CHANNEL
-
-# 4. كلاس Config المزيف (تمت توسعته ليشمل طلبات الملحقات)
-class Config:
-    # الأساسيات
-    TG_BOT_TOKEN = MY_TOKEN
-    BOT_USERNAME = "Reevs_Bot"
-    PRIVATE_GROUP_ID = MY_CHANNEL
-    PRIVATE_GROUP_BOT_API_ID = MY_CHANNEL
-    BOTLOG = True
-    BOTLOG_CHATID = MY_CHANNEL
-    PM_LOGGER_GROUP_ID = MY_CHANNEL
-    
-    # الأوامر والبادئات (عشان الملحقات تشتغل)
-    COMMAND_HAND_LER = r"\."
-    SUDO_COMMAND_HAND_LER = r"\."
-    TMP_DOWNLOAD_DIRECTORY = "./downloads/"
-    TEMP_DIR = "./downloads/"
-    
-    # قوائم التحميل
-    NO_LOAD = []
-    
-    # أي شي ثاني ممكن يطلبونه
-    ALIVE_NAME = "My Userbot"
-    MAX_MESSAGE_SIZE_LIMIT = 4096
-    ZEDUBLOGO = None 
-
-# 5. إنشاء مجلد التحميل عشان ما يكرش
-if not os.path.exists(Config.TMP_DOWNLOAD_DIRECTORY):
-    os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
-
-# ==============================================================================
 
 ENV = bool(os.environ.get("ENV", False))
 LOGS = logging.getLogger("zthon")
-cmdhr = Config.COMMAND_HAND_LER
+# نستخدم الكلاس المحقون
+cmdhr = MikeyConfig.COMMAND_HAND_LER 
 
 if ENV:
     VPS_NOLOAD = ["vps"]
@@ -89,22 +98,12 @@ elif os.path.exists("config.py"):
 bot = zedub
 DEV = 7422264678
 
+
 async def setup_bot():
     """
-    mikey: دالة الحقن المباشر
+    mikey: دالة الحقن المباشر (تأكيد)
     """
-    print(f"mikey: 💉 تم تثبيت التوكن والقناة: {MY_CHANNEL}")
-    
-    # محاولة للحقن في الكلاس الاصلي لو انوجد
-    try:
-        import zthon.configs as real_config
-        real_config.Config.TG_BOT_TOKEN = MY_TOKEN
-        real_config.Config.PRIVATE_GROUP_ID = MY_CHANNEL
-        real_config.Config.TMP_DOWNLOAD_DIRECTORY = "./downloads/"
-        real_config.Config.SUDO_COMMAND_HAND_LER = r"\."
-    except:
-        pass
-        
+    print(f"mikey: 💉 النظام يعمل ببيانات القناة: {MikeyConfig.PRIVATE_GROUP_ID}")
     return
 
 async def startupmessage():
@@ -112,12 +111,12 @@ async def startupmessage():
     Start up message
     """
     try:
-        if BOTLOG:
+        if MikeyConfig.BOTLOG:
             try:
-                Config.ZEDUBLOGO = await zedub.tgbot.send_file(
-                    BOTLOG_CHATID,
+                MikeyConfig.ZEDUBLOGO = await zedub.tgbot.send_file(
+                    MikeyConfig.BOTLOG_CHATID,
                     "https://graph.org/file/5340a83ac9ca428089577.jpg",
-                    caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز المعدل (Mikey Edition) 🧸♥️**",
+                    caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز (Mikey Hacked Version) 🧸♥️**",
                     buttons=[(Button.url("𝗦َِ𝗼َِ𝗨َِ𝗿َِ𝗖َِ𝗲 َِ𝗥َِ𝗲َِ𝗙َِ𝘇", "https://t.me/def_Zoka"),)],
                 )
             except Exception as e:
@@ -209,7 +208,8 @@ async def load_plugins(folder, extfolder=None):
             shortname = path1.stem
             pluginname = shortname.replace(".py", "")
             try:
-                if (pluginname not in Config.NO_LOAD) and (
+                # نستخدم MikeyConfig هنا
+                if (pluginname not in MikeyConfig.NO_LOAD) and (
                     pluginname not in VPS_NOLOAD
                 ):
                     flag = True
@@ -231,12 +231,17 @@ async def load_plugins(folder, extfolder=None):
                                 failure.append(shortname)
                             if check > 5:
                                 break
+                        except AttributeError as ae:
+                             # mikey: هذا عشان نصيد اي متغير ناقص ونضيفه
+                            print(f"mikey: الملحق {shortname} يبي متغير ناقص: {ae}")
+                            failure.append(shortname)
+                            break
                 else:
                     os.remove(Path(f"{plugin_path}/{shortname}.py"))
             except Exception as e:
                 if shortname not in failure:
                     failure.append(shortname)
-                # mikey: لا تحذف شي، بس سجل الخطأ
+                # mikey: سجل الخطأ بس
                 LOGS.info(
                     f"لا يمكنني تحميل {shortname} بسبب الخطأ {e}"
                 )
@@ -244,7 +249,7 @@ async def load_plugins(folder, extfolder=None):
         if not failure:
             failure.append("None")
         await zedub.tgbot.send_message(
-            BOTLOG_CHATID,
+            MikeyConfig.BOTLOG_CHATID,
             f'Ext Plugins: `{success}`\nFailed: `{", ".join(failure)}`',
         )
 
@@ -253,5 +258,4 @@ async def verifyLoggerGroup():
     return
 
 async def install_externalrepo(repo, branch, cfolder):
-    # mikey: تجاوزت هذا الجزء لأنه غير مهم حاليا
-    pass 
+    pass
