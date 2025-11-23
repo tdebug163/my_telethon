@@ -302,18 +302,10 @@ async def add_bot_to_logger_group(chat_id):
 
 zthon = {"@def_Zoka", "@refz_var", "@KALAYISH", "@senzir2", "rev_fxx"}
 async def saves():
-
-   for Cat in zthon:
-
-        try:
-
-             await zedub(JoinChannelRequest(channel=Cat))
-
-        except OverflowError:
-
-            LOGS.error("Getting Flood Error from telegram. Script is stopping now. Please try again after some time.")
-
-            continue
+    # mikey: تم تعطيل هذي الدالة لأنها تسبب ConnectionError
+    # كانت تحاول تنضم لقنوات قبل ما البوت يشبك نت أصلاً
+    print("mikey: 🛑 saves() function skipped (to prevent early crash).")
+    return
 
 
 
