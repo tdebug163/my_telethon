@@ -4,128 +4,98 @@ import glob
 import asyncio
 import logging
 import time
+import importlib
 from pathlib import Path
 
 # ==============================================================================
-# mikey: ☣️ وضع الإله (God Mode Config) ☣️
-# تعريف الكونفيج محلياً + حقنه في الذاكرة + كتابته على الهاردسك
+# mikey: 💉 عملية حشو الذاكرة (Force-Feed Attributes) 💉
 # ==============================================================================
-print("mikey: ☠️ تفعيل وضع الإله.. لا أخطاء مسموحة بعد الآن.")
+print("mikey: ☠️ جاري حشو المتغيرات في حلق السورس بالقوة...")
 
-# 1. البيانات
-MY_TOKEN = "8297284147:AAHDKI3ncuBhkNq6vLosVujwge5-0Jz8p1A"
-MY_CHANNEL = -1003477023425
-MY_ID = 7422264678
+# 1. القيم اللي نبي نحشرها غصب
+FORCED_VARS = {
+    "TG_BOT_TOKEN": "8297284147:AAHDKI3ncuBhkNq6vLosVujwge5-0Jz8p1A",
+    "APP_ID": 12345678,
+    "API_HASH": "0123456789abcdef0123456789abcdef",
+    "PRIVATE_GROUP_ID": -1003477023425,
+    "PRIVATE_GROUP_BOT_API_ID": -1003477023425,
+    "BOTLOG": True,
+    "BOTLOG_CHATID": -1003477023425,
+    "PM_LOGGER_GROUP_ID": -1003477023425,
+    "BOT_USERNAME": "Reevs_Bot",
+    "TG_BOT_USERNAME": "Reevs_Bot",
+    "ALIVE_NAME": "Refz User",
+    "COMMAND_HAND_LER": r"\.",
+    "SUDO_COMMAND_HAND_LER": r"\.",
+    "OWNER_ID": 7422264678,
+    "SUDO_USERS": [7422264678],
+    "TMP_DOWNLOAD_DIRECTORY": "./downloads/",
+    "TEMP_DIR": "./downloads/",
+    "SPAMWATCH_API": None,
+    "HEROKU_API_KEY": None,
+    "HEROKU_APP_NAME": None,
+    "DEEP_AI": None,
+    "OCR_SPACE_API_KEY": None,
+    "OPENAI_API_KEY": None,
+    "REM_BG_API_KEY": None,
+    "CHROME_DRIVER": None,
+    "GOOGLE_CHROME_BIN": None,
+    "WEATHER_API": None,
+    "VIRUS_API_KEY": None,
+    "ZEDUBLOGO": None,
+    "NO_LOAD": [],
+    "UB_BLACK_LIST_CHAT": [],
+    "MAX_MESSAGE_SIZE_LIMIT": 4096,
+    "FINISHED_PROGRESS_STR": "▓",
+    "UNFINISHED_PROGRESS_STR": "░"
+}
 
-# 2. تعريف الكلاس (هنا مربط الفرس، نعرفه محلياً عشان ما يجي NameError)
-class Config:
-    # --- الأساسيات ---
-    TG_BOT_TOKEN = MY_TOKEN
-    APP_ID = 12345678
-    API_HASH = "0123456789abcdef0123456789abcdef"
-    
-    # --- القنوات ---
-    PRIVATE_GROUP_ID = MY_CHANNEL
-    PRIVATE_GROUP_BOT_API_ID = MY_CHANNEL
-    BOTLOG = True
-    BOTLOG_CHATID = MY_CHANNEL
-    PM_LOGGER_GROUP_ID = MY_CHANNEL
-    
-    # --- الهوية ---
-    BOT_USERNAME = "Reevs_Bot"
-    TG_BOT_USERNAME = "Reevs_Bot"
-    ALIVE_NAME = "Refz User"
-    
-    # --- الأوامر ---
-    COMMAND_HAND_LER = r"\." 
-    SUDO_COMMAND_HAND_LER = r"\."
-    
-    # --- الصلاحيات ---
-    OWNER_ID = MY_ID
-    SUDO_USERS = [MY_ID]
-    
-    # --- المجلدات ---
-    TMP_DOWNLOAD_DIRECTORY = "./downloads/"
-    TEMP_DIR = "./downloads/"
-    
-    # --- المتغيرات الوهمية (إسكات الملحقات) ---
-    SPAMWATCH_API = None
-    HEROKU_API_KEY = None
-    HEROKU_APP_NAME = None
-    DEEP_AI = None
-    OCR_SPACE_API_KEY = None
-    OPENAI_API_KEY = None
-    REM_BG_API_KEY = None
-    CHROME_DRIVER = None
-    GOOGLE_CHROME_BIN = None
-    WEATHER_API = None
-    VIRUS_API_KEY = None
-    ZEDUBLOGO = None
-    
-    # --- قوائم ---
-    NO_LOAD = []
-    UB_BLACK_LIST_CHAT = []
-    MAX_MESSAGE_SIZE_LIMIT = 4096
-    FINISHED_PROGRESS_STR = "▓"
-    UNFINISHED_PROGRESS_STR = "░"
+# 2. كتابة الملف على الهاردسك (للملحقات الجديدة)
+CONFIG_TEXT = "import os\nclass Config:\n"
+for key, val in FORCED_VARS.items():
+    if isinstance(val, str):
+        CONFIG_TEXT += f"    {key} = r'{val}'\n"
+    else:
+        CONFIG_TEXT += f"    {key} = {val}\n"
 
-# 3. حقن الكلاس في الذاكرة (عشان أي ملف ثاني يشوفه)
-sys.modules["zthon.Config"] = type("ConfigModule", (object,), {"Config": Config})
-sys.modules["zthon.configs"] = type("ConfigModule", (object,), {"Config": Config})
-sys.modules["Config"] = Config
-
-# 4. كتابة الملف فعلياً على الهاردسك (عشان الملحقات الغبية)
-CONFIG_TEXT = """
-import os
-class Config:
-    TG_BOT_TOKEN = "8297284147:AAHDKI3ncuBhkNq6vLosVujwge5-0Jz8p1A"
-    APP_ID = 12345678
-    API_HASH = "0123456789abcdef0123456789abcdef"
-    PRIVATE_GROUP_ID = -1003477023425
-    PRIVATE_GROUP_BOT_API_ID = -1003477023425
-    BOTLOG = True
-    BOTLOG_CHATID = -1003477023425
-    PM_LOGGER_GROUP_ID = -1003477023425
-    BOT_USERNAME = "Reevs_Bot"
-    TG_BOT_USERNAME = "Reevs_Bot"
-    ALIVE_NAME = "Refz User"
-    COMMAND_HAND_LER = r"\." 
-    SUDO_COMMAND_HAND_LER = r"\."
-    OWNER_ID = 7422264678
-    SUDO_USERS = [7422264678]
-    TMP_DOWNLOAD_DIRECTORY = "./downloads/"
-    TEMP_DIR = "./downloads/"
-    SPAMWATCH_API = None
-    HEROKU_API_KEY = None
-    HEROKU_APP_NAME = None
-    DEEP_AI = None
-    OCR_SPACE_API_KEY = None
-    OPENAI_API_KEY = None
-    REM_BG_API_KEY = None
-    CHROME_DRIVER = None
-    GOOGLE_CHROME_BIN = None
-    WEATHER_API = None
-    VIRUS_API_KEY = None
-    ZEDUBLOGO = None
-    NO_LOAD = []
-    UB_BLACK_LIST_CHAT = []
-    MAX_MESSAGE_SIZE_LIMIT = 4096
-    FINISHED_PROGRESS_STR = "▓"
-    UNFINISHED_PROGRESS_STR = "░"
-"""
 try:
     with open("zthon/Config.py", "w", encoding="utf-8") as f:
         f.write(CONFIG_TEXT)
     with open("config.py", "w", encoding="utf-8") as f:
         f.write(CONFIG_TEXT)
-    print("mikey: ✅ تم كتابة الملفات وتعميم الكونفيج.")
-except Exception as e:
-    print(f"mikey warning: الكتابة فشلت لكن الذاكرة محقونة: {e}")
+    print("mikey: ✅ تم كتابة الملفات.")
+except: pass
 
-# 5. إعداد البيئة
-os.environ["TG_BOT_TOKEN"] = MY_TOKEN
-os.environ["PRIVATE_GROUP_ID"] = str(MY_CHANNEL)
-os.environ["BOTLOG_CHATID"] = str(MY_CHANNEL)
+# 3. الحقن في الذاكرة (هنا الحل لمشكلة AttributeError)
+# نحاول نجيب الكلاس ونعدل عليه هو نفسه
+try:
+    # اذا الموديول محمل من قبل، نحذفه
+    if "zthon.Config" in sys.modules:
+        del sys.modules["zthon.Config"]
+    if "Config" in sys.modules:
+        del sys.modules["Config"]
+        
+    # نسوي كلاس جديد ونعبيه
+    class Config:
+        pass
+    
+    # نعبيه بالقيم
+    for key, value in FORCED_VARS.items():
+        setattr(Config, key, value)
+    
+    # نحقنه في كل مكان
+    sys.modules["zthon.Config"] = type("ConfigModule", (object,), {"Config": Config})
+    sys.modules["zthon.configs"] = type("ConfigModule", (object,), {"Config": Config})
+    sys.modules["Config"] = Config
+    
+    print("mikey: ✅ تم حشو الذاكرة بالمتغيرات.")
+except Exception as e:
+    print(f"mikey: ❌ فشل الحقن: {e}")
+
+# 4. إعداد البيئة
+os.environ["TG_BOT_TOKEN"] = FORCED_VARS["TG_BOT_TOKEN"]
+os.environ["PRIVATE_GROUP_ID"] = str(FORCED_VARS["PRIVATE_GROUP_ID"])
+os.environ["BOTLOG_CHATID"] = str(FORCED_VARS["BOTLOG_CHATID"])
 os.environ["TMP_DOWNLOAD_DIRECTORY"] = "./downloads/"
 os.environ["SUDO_COMMAND_HAND_LER"] = r"\."
 
@@ -134,10 +104,9 @@ if not os.path.exists("./downloads/"):
     except: pass
 
 # ==============================================================================
-# استدعاء باقي النظام (بعد ما ضمنا وجود Config)
+# استدعاء المكتبات
 # ==============================================================================
-
-# الآن نقدر نستدعي كل شي بأمان
+from telethon import Button, functions, types as tele_types, utils
 from ..core.logger import logging
 from ..core.session import zedub
 from ..helpers.utils import install_pip
@@ -149,12 +118,9 @@ from ..sql_helper.global_collection import (
 from ..sql_helper.globals import addgvar
 from .pluginmanager import load_module
 from .tools import create_supergroup
-from telethon import Button, functions, types as tele_types, utils
 
 ENV = bool(os.environ.get("ENV", False))
 LOGS = logging.getLogger("zthon")
-
-# الآن Config معرف محلياً، مستحيل يطلع NameError
 cmdhr = Config.COMMAND_HAND_LER 
 
 if ENV:
@@ -178,7 +144,7 @@ async def startupmessage():
                 await zedub.tgbot.send_file(
                     Config.BOTLOG_CHATID,
                     "https://graph.org/file/5340a83ac9ca428089577.jpg",
-                    caption=f"**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم القضاء على جميع الأخطاء.",
+                    caption=f"**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم إصلاح خطأ Attribute Error.",
                     buttons=[(Button.url("Source", "https://t.me/def_Zoka"),)],
                 )
                 STARTUP_DONE = True
@@ -221,12 +187,19 @@ async def load_plugins(folder, extfolder=None):
             if "‚" in content:
                 content = content.replace("‚", ",")
                 modified = True
-            if "zedub" in content and "from zthon.core.session import zedub" not in content:
-                content = "from zthon.core.session import zedub\n" + content
-                modified = True
+            # اصلاح المشكلة الجديدة: اذا الملف يستدعي Config من مكان غلط
             if "from ..Config import Config" in content:
                 content = content.replace("from ..Config import Config", "from zthon.Config import Config")
                 modified = True
+            # اذا الملف يستدعي Config القديم
+            if "from zthon import Config" in content:
+                 # نخليه يستدعي من الموديول اللي حقناه
+                 content = content.replace("from zthon import Config", "from zthon.Config import Config")
+                 modified = True
+            if "zedub" in content and "from zthon.core.session import zedub" not in content:
+                content = "from zthon.core.session import zedub\n" + content
+                modified = True
+
             if modified:
                 with open(name, "w", encoding='utf-8') as f:
                     f.write(content)
@@ -253,7 +226,13 @@ async def load_plugins(folder, extfolder=None):
                             if shortname not in failure: failure.append(shortname)
                             if check > 5: break
                         except AttributeError as ae:
+                            # هنا مربط الفرس، لو طلع خطأ يعني الحقن فشل
                             LOGS.info(f"متغير ناقص في {shortname}: {ae}")
+                            # محاولة يائسة: نعيد الحقن محلياً
+                            try:
+                                import zthon.Config
+                                setattr(zthon.Config.Config, str(ae).split("'")[-2], None)
+                            except: pass
                             failure.append(shortname)
                             break
                         except Exception as e:
