@@ -3,108 +3,116 @@ import os
 import glob
 import asyncio
 import logging
-import time
 import importlib
 from pathlib import Path
 
 # ==============================================================================
-# mikey: 💉 عملية حشو الذاكرة (Force-Feed Attributes) 💉
+# mikey: 🩸 العملية القيصرية (إنشاء الكونفيج المفقود) 🩸
 # ==============================================================================
-print("mikey: ☠️ جاري حشو المتغيرات في حلق السورس بالقوة...")
+print("mikey: ☠️ اكتشفنا العلة! الملف مفقود أو فارغ بسبب الـ Git Reset.")
+print("mikey: 🔨 جاري تصنيع ملف Config.py كامل الدسم...")
 
-# 1. القيم اللي نبي نحشرها غصب
-FORCED_VARS = {
-    "TG_BOT_TOKEN": "8297284147:AAHDKI3ncuBhkNq6vLosVujwge5-0Jz8p1A",
-    "APP_ID": 12345678,
-    "API_HASH": "0123456789abcdef0123456789abcdef",
-    "PRIVATE_GROUP_ID": -1003477023425,
-    "PRIVATE_GROUP_BOT_API_ID": -1003477023425,
-    "BOTLOG": True,
-    "BOTLOG_CHATID": -1003477023425,
-    "PM_LOGGER_GROUP_ID": -1003477023425,
-    "BOT_USERNAME": "Reevs_Bot",
-    "TG_BOT_USERNAME": "Reevs_Bot",
-    "ALIVE_NAME": "Refz User",
-    "COMMAND_HAND_LER": r"\.",
-    "SUDO_COMMAND_HAND_LER": r"\.",
-    "OWNER_ID": 7422264678,
-    "SUDO_USERS": [7422264678],
-    "TMP_DOWNLOAD_DIRECTORY": "./downloads/",
-    "TEMP_DIR": "./downloads/",
-    "SPAMWATCH_API": None,
-    "HEROKU_API_KEY": None,
-    "HEROKU_APP_NAME": None,
-    "DEEP_AI": None,
-    "OCR_SPACE_API_KEY": None,
-    "OPENAI_API_KEY": None,
-    "REM_BG_API_KEY": None,
-    "CHROME_DRIVER": None,
-    "GOOGLE_CHROME_BIN": None,
-    "WEATHER_API": None,
-    "VIRUS_API_KEY": None,
-    "ZEDUBLOGO": None,
-    "NO_LOAD": [],
-    "UB_BLACK_LIST_CHAT": [],
-    "MAX_MESSAGE_SIZE_LIMIT": 4096,
-    "FINISHED_PROGRESS_STR": "▓",
-    "UNFINISHED_PROGRESS_STR": "░"
-}
+# 1. محتوى الملف (فيه كل شي يطلبه السورس وزيادة)
+# ركز: حطيت لك كل المتغيرات اللي طلعت في اللوج حقك
+FULL_CONFIG_CONTENT = """
+import os
 
-# 2. كتابة الملف على الهاردسك (للملحقات الجديدة)
-CONFIG_TEXT = "import os\nclass Config:\n"
-for key, val in FORCED_VARS.items():
-    if isinstance(val, str):
-        CONFIG_TEXT += f"    {key} = r'{val}'\n"
-    else:
-        CONFIG_TEXT += f"    {key} = {val}\n"
+class Config:
+    # --- الثوابت الأساسية ---
+    TG_BOT_TOKEN = "8297284147:AAHDKI3ncuBhkNq6vLosVujwge5-0Jz8p1A"
+    APP_ID = 12345678
+    API_HASH = "0123456789abcdef0123456789abcdef"
+    
+    # --- القنوات (مهم جداً تكون أرقام صحيحة) ---
+    PRIVATE_GROUP_ID = -1003477023425
+    PRIVATE_GROUP_BOT_API_ID = -1003477023425
+    BOTLOG = True
+    BOTLOG_CHATID = -1003477023425
+    PM_LOGGER_GROUP_ID = -1003477023425
+    
+    # --- الهوية ---
+    BOT_USERNAME = "Reevs_Bot"
+    TG_BOT_USERNAME = "Reevs_Bot"
+    ALIVE_NAME = "Refz User"
+    
+    # --- مسارات التحميل (سبب المشكلة الرئيسية) ---
+    TMP_DOWNLOAD_DIRECTORY = "./downloads/"
+    TEMP_DIR = "./downloads/"
+    
+    # --- الأوامر ---
+    COMMAND_HAND_LER = r"\."
+    SUDO_COMMAND_HAND_LER = r"\."
+    
+    # --- الصلاحيات ---
+    OWNER_ID = 7422264678
+    SUDO_USERS = [7422264678]
+    
+    # --- متغيرات وهمية لإسكات الملحقات (API Keys) ---
+    SPAMWATCH_API = None
+    HEROKU_API_KEY = None
+    HEROKU_APP_NAME = None
+    DEEP_AI = None
+    OCR_SPACE_API_KEY = None
+    OPENAI_API_KEY = None
+    REM_BG_API_KEY = None
+    CHROME_DRIVER = None
+    GOOGLE_CHROME_BIN = None
+    WEATHER_API = None
+    VIRUS_API_KEY = None
+    ZEDUBLOGO = None
+    
+    # --- قوائم ومتغيرات أخرى ---
+    NO_LOAD = []
+    UB_BLACK_LIST_CHAT = []
+    MAX_MESSAGE_SIZE_LIMIT = 4096
+    FINISHED_PROGRESS_STR = "▓"
+    UNFINISHED_PROGRESS_STR = "░"
+    
+    # --- دالة الجوكر (احتياط لو نسينا شي) ---
+    def __getattr__(self, name):
+        return None
+"""
 
+# 2. الكتابة في كل المسارات المحتملة (Case Sensitive Linux)
 try:
+    # المسار الأساسي (كابيتال)
     with open("zthon/Config.py", "w", encoding="utf-8") as f:
-        f.write(CONFIG_TEXT)
-    with open("config.py", "w", encoding="utf-8") as f:
-        f.write(CONFIG_TEXT)
-    print("mikey: ✅ تم كتابة الملفات.")
-except: pass
-
-# 3. الحقن في الذاكرة (هنا الحل لمشكلة AttributeError)
-# نحاول نجيب الكلاس ونعدل عليه هو نفسه
-try:
-    # اذا الموديول محمل من قبل، نحذفه
-    if "zthon.Config" in sys.modules:
-        del sys.modules["zthon.Config"]
-    if "Config" in sys.modules:
-        del sys.modules["Config"]
+        f.write(FULL_CONFIG_CONTENT)
+    
+    # المسار الثانوي (سمول) - احتياط
+    with open("zthon/config.py", "w", encoding="utf-8") as f:
+        f.write(FULL_CONFIG_CONTENT)
         
-    # نسوي كلاس جديد ونعبيه
-    class Config:
-        pass
-    
-    # نعبيه بالقيم
-    for key, value in FORCED_VARS.items():
-        setattr(Config, key, value)
-    
-    # نحقنه في كل مكان
-    sys.modules["zthon.Config"] = type("ConfigModule", (object,), {"Config": Config})
-    sys.modules["zthon.configs"] = type("ConfigModule", (object,), {"Config": Config})
-    sys.modules["Config"] = Config
-    
-    print("mikey: ✅ تم حشو الذاكرة بالمتغيرات.")
+    # المسار الجذري - احتياط
+    with open("config.py", "w", encoding="utf-8") as f:
+        f.write(FULL_CONFIG_CONTENT)
+        
+    print("mikey: ✅ تم زرع الملفات في كل مكان.")
 except Exception as e:
-    print(f"mikey: ❌ فشل الحقن: {e}")
+    print(f"mikey: ❌ مصيبة في الكتابة: {e}")
 
-# 4. إعداد البيئة
-os.environ["TG_BOT_TOKEN"] = FORCED_VARS["TG_BOT_TOKEN"]
-os.environ["PRIVATE_GROUP_ID"] = str(FORCED_VARS["PRIVATE_GROUP_ID"])
-os.environ["BOTLOG_CHATID"] = str(FORCED_VARS["BOTLOG_CHATID"])
-os.environ["TMP_DOWNLOAD_DIRECTORY"] = "./downloads/"
-os.environ["SUDO_COMMAND_HAND_LER"] = r"\."
-
+# 3. إنشاء المجلدات
 if not os.path.exists("./downloads/"):
     try: os.makedirs("./downloads/")
     except: pass
 
+# 4. تحديث الذاكرة بالقوة (Reload)
+# هذا أهم جزء عشان البايثون يشوف الملف الجديد
+try:
+    import zthon.Config
+    importlib.reload(zthon.Config)
+    from zthon.Config import Config
+    print("mikey: ✅ تم تحديث الذاكرة (Reload Success).")
+except ImportError:
+    print("mikey: ⚠️ فشل الـ Reload، بنحقن الذاكرة يدوياً.")
+    # خطة ب: نزرع الكلاس يدوياً
+    exec(FULL_CONFIG_CONTENT) # ينفذ النص ويصنع كلاس Config
+    sys.modules["zthon.Config"] = type("Module", (), {"Config": Config})
+    sys.modules["zthon.configs"] = type("Module", (), {"Config": Config})
+    sys.modules["Config"] = Config
+
 # ==============================================================================
-# استدعاء المكتبات
+# تشغيل النظام
 # ==============================================================================
 from telethon import Button, functions, types as tele_types, utils
 from ..core.logger import logging
@@ -144,7 +152,7 @@ async def startupmessage():
                 await zedub.tgbot.send_file(
                     Config.BOTLOG_CHATID,
                     "https://graph.org/file/5340a83ac9ca428089577.jpg",
-                    caption=f"**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم إصلاح خطأ Attribute Error.",
+                    caption=f"**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم استعادة ملف Config المفقود.",
                     buttons=[(Button.url("Source", "https://t.me/def_Zoka"),)],
                 )
                 STARTUP_DONE = True
@@ -179,27 +187,24 @@ async def load_plugins(folder, extfolder=None):
     failure = []
 
     for name in files:
-        # مصلح الملفات
+        # المصلح الآلي للملفات المعطوبة برمجياً
         try:
             with open(name, "r", encoding='utf-8', errors='ignore') as f:
                 content = f.read()
             modified = False
+            # مشكلة الفاصلة
             if "‚" in content:
                 content = content.replace("‚", ",")
                 modified = True
-            # اصلاح المشكلة الجديدة: اذا الملف يستدعي Config من مكان غلط
-            if "from ..Config import Config" in content:
-                content = content.replace("from ..Config import Config", "from zthon.Config import Config")
-                modified = True
-            # اذا الملف يستدعي Config القديم
-            if "from zthon import Config" in content:
-                 # نخليه يستدعي من الموديول اللي حقناه
-                 content = content.replace("from zthon import Config", "from zthon.Config import Config")
-                 modified = True
+            # مشكلة zedub الناقص
             if "zedub" in content and "from zthon.core.session import zedub" not in content:
                 content = "from zthon.core.session import zedub\n" + content
                 modified = True
-
+            # توجيه الاستيراد للملف الصحيح
+            if "from ..Config import Config" in content:
+                content = content.replace("from ..Config import Config", "from zthon.Config import Config")
+                modified = True
+            
             if modified:
                 with open(name, "w", encoding='utf-8') as f:
                     f.write(content)
@@ -226,13 +231,7 @@ async def load_plugins(folder, extfolder=None):
                             if shortname not in failure: failure.append(shortname)
                             if check > 5: break
                         except AttributeError as ae:
-                            # هنا مربط الفرس، لو طلع خطأ يعني الحقن فشل
                             LOGS.info(f"متغير ناقص في {shortname}: {ae}")
-                            # محاولة يائسة: نعيد الحقن محلياً
-                            try:
-                                import zthon.Config
-                                setattr(zthon.Config.Config, str(ae).split("'")[-2], None)
-                            except: pass
                             failure.append(shortname)
                             break
                         except Exception as e:
