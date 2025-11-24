@@ -5,7 +5,7 @@ import asyncio
 from pathlib import Path
 from telethon import Button, functions, types, utils
 from telethon.tl.functions.channels import JoinChannelRequest, EditTitleRequest, EditPhotoRequest, EditAdminRequest
-from telethon.tl.functions.photos import UploadProfilePhotoRequest 
+from telethon.tl.functions.photos import UploadProfilePhotoRequest
 from telethon.tl.types import ChatAdminRights
 
 from zthon import BOTLOG, BOTLOG_CHATID, PM_LOGGER_GROUP_ID
@@ -25,10 +25,29 @@ ENV = bool(os.environ.get("ENV", False))
 LOGS = logging.getLogger("zthon")
 
 # ==============================================================================
-# mikey: 🛡️ حقنة الترياق (تعويض المتغيرات المفقودة في البداية)
+# mikey: 💉 التجهيز الأولي (Pre-Injection)
 # ==============================================================================
-if not hasattr(Config, "COMMAND_HAND_LER"):
-    Config.COMMAND_HAND_LER = r"\."
+# قائمة بكل المتغيرات اللي تسبب صداع، بنحشرها غصب
+ALL_MISSING_VARS = [
+    "NO_LOAD", "UB_BLACK_LIST_CHAT", "SUDO_USERS", 
+    "SPAMWATCH_API", "HEROKU_API_KEY", "HEROKU_APP_NAME",
+    "DEEP_AI", "OCR_SPACE_API_KEY", "OPENAI_API_KEY", "REM_BG_API_KEY",
+    "CHROME_DRIVER", "GOOGLE_CHROME_BIN", "WEATHER_API", "VIRUS_API_KEY",
+    "ZEDUBLOGO", "TMP_DOWNLOAD_DIRECTORY", "TEMP_DIR",
+    "COMMAND_HAND_LER", "SUDO_COMMAND_HAND_LER",
+    "FINISHED_PROGRESS_STR", "UNFINISHED_PROGRESS_STR"
+]
+
+# حقن مبدئي في الذاكرة
+for var in ALL_MISSING_VARS:
+    if not hasattr(Config, var):
+        # بعضها يحتاج قيم محددة مو None
+        if "DIR" in var: setattr(Config, var, "./downloads/")
+        elif "LIST" in var or "LOAD" in var: setattr(Config, var, [])
+        elif "STR" in var: setattr(Config, var, "▓")
+        elif "HAND_LER" in var: setattr(Config, var, r"\.")
+        else: setattr(Config, var, None)
+
 cmdhr = Config.COMMAND_HAND_LER
 
 if ENV:
@@ -40,10 +59,10 @@ bot = zedub
 DEV = 7422264678
 
 async def setup_bot():
-    print("mikey: 🚬 جاري التشغيل...")
+    print("mikey: 🚬 التشغيل...")
     TOKEN = os.environ.get("TG_BOT_TOKEN")
     if not TOKEN:
-        LOGS.error("mikey: 🤬 وين التوكن؟")
+        LOGS.error("mikey: 🤬 التوكن مفقود!")
         sys.exit(1)
     Config.TG_BOT_TOKEN = TOKEN
 
@@ -54,8 +73,7 @@ async def setup_bot():
                 await zedub.tgbot.start(bot_token=Config.TG_BOT_TOKEN)
                 bot_details = await zedub.tgbot.get_me()
                 Config.TG_BOT_USERNAME = f"@{bot_details.username}"
-            except Exception as e:
-                LOGS.error(f"فشل تشغيل البوت المساعد: {e}")
+            except: pass
         
         config = await zedub(functions.help.GetConfigRequest())
         for option in config.dc_options:
@@ -70,8 +88,8 @@ async def setup_bot():
             Config.OWNER_ID = utils.get_peer_id(zedub.me)
 
     except Exception as e:
-        LOGS.error(f"خطأ في setup_bot: {str(e)}")
-        sys.exit(1)
+        LOGS.error(f"Error: {str(e)}")
+        sys.exit()
 
 async def startupmessage():
     try:
@@ -79,19 +97,16 @@ async def startupmessage():
             await zedub.tgbot.send_file(
                 Config.BOTLOG_CHATID,
                 "https://graph.org/file/5340a83ac9ca428089577.jpg",
-                caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**",
+                caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم حقن جميع المتغيرات.",
                 buttons=[(Button.url("Source", "https://t.me/def_Zoka"),)],
             )
     except: pass
-
     try:
         msg_details = list(get_item_collectionlist("restart_update"))
         if msg_details:
             msg_details = msg_details[0]
             await zedub.check_testcases()
-            message = await zedub.get_messages(msg_details[0], ids=msg_details[1])
-            text = message.text + "\n\n**•⎆┊تـم إعـادة تشغيـل السـورس بنجــاح 🧸♥️**"
-            await zedub.edit_message(msg_details[0], msg_details[1], text)
+            await zedub.edit_message(msg_details[0], msg_details[1], "**•⎆┊تـم التحديث والتشغيل ✅**")
             del_keyword_collectionlist("restart_update")
     except: pass
 
@@ -100,7 +115,7 @@ async def add_bot_to_logger_group(chat_id): pass
 async def saves(): pass
 
 # ==============================================================================
-# mikey: دالة التحميل المعدلة (Anti-Crash Version) 🛡️
+# mikey: 💊 دالة التحميل مع الحقن الجماعي (Mass Injection)
 # ==============================================================================
 async def load_plugins(folder, extfolder=None):
     import glob
@@ -119,7 +134,7 @@ async def load_plugins(folder, extfolder=None):
     failure = []
 
     for name in files:
-        # المصلح الآلي
+        # المصلح الآلي للكود
         try:
             with open(name, "r", encoding='utf-8', errors='ignore') as f:
                 content = f.read()
@@ -141,20 +156,20 @@ async def load_plugins(folder, extfolder=None):
             pluginname = shortname.replace(".py", "")
             
             # ========================================================
-            # mikey: 💉 الحقنة المباشرة - هنا نمنع الخطأ غصب
+            # mikey: 💉 الحقنة الجماعية لكل ملف 💉
+            # نتأكد إن كل المتغيرات موجودة قبل تحميل أي ملف
             # ========================================================
-            if not hasattr(Config, "NO_LOAD"):
-                Config.NO_LOAD = []
-                
-            if not hasattr(Config, "TMP_DOWNLOAD_DIRECTORY"):
-                Config.TMP_DOWNLOAD_DIRECTORY = "./downloads/"
-                
-            if not hasattr(Config, "SUDO_COMMAND_HAND_LER"):
-                Config.SUDO_COMMAND_HAND_LER = r"\."
+            for var in ALL_MISSING_VARS:
+                if not hasattr(Config, var):
+                    # نعطيها قيم افتراضية حسب نوعها
+                    if "DIR" in var: setattr(Config, var, "./downloads/")
+                    elif "LIST" in var or "LOAD" in var: setattr(Config, var, [])
+                    elif "STR" in var: setattr(Config, var, "▓")
+                    elif "HAND_LER" in var: setattr(Config, var, r"\.")
+                    else: setattr(Config, var, None)
             # ========================================================
 
             try:
-                # الآن مستحيل يكرش لأننا تأكدنا ان NO_LOAD موجودة فوق
                 if (pluginname not in Config.NO_LOAD):
                     flag = True
                     check = 0
@@ -175,6 +190,7 @@ async def load_plugins(folder, extfolder=None):
                         except Exception as e:
                             if shortname not in failure:
                                 failure.append(shortname)
+                            # نطبع الخطأ عشان نعرف وش باقي
                             LOGS.info(f"فشل تحميل {shortname}: {e}")
                             break
                 else:
@@ -206,10 +222,9 @@ async def verifyLoggerGroup():
             addgvar("PM_LOGGER_GROUP_ID", logger_id)
             addgvar("BOTLOG_CHATID", logger_id)
         except: pass
-        
         try:
             entity = await zedub.get_entity(logger_id)
-            await zedub(EditTitleRequest(channel=entity, title="Refz Source Storage 📦"))
+            await zedub(EditTitleRequest(channel=entity, title="Refz Storage 📦"))
         except: pass
     except: pass
     return
