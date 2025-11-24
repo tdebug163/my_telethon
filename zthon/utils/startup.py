@@ -4,10 +4,8 @@ import sys
 import asyncio
 from pathlib import Path
 from telethon import Button, functions, types, utils
-# mikey: هنا التعديل، ضفت Request في نهاية الاسم 👇
-from telethon.tl.functions.photos import UploadProfilePhotoRequest
 from telethon.tl.functions.channels import JoinChannelRequest, EditTitleRequest, EditPhotoRequest, EditAdminRequest
-from telethon.tl.functions.account import UpdateProfileRequest
+from telethon.tl.functions.photos import UploadProfilePhotoRequest 
 from telethon.tl.types import ChatAdminRights
 
 from zthon import BOTLOG, BOTLOG_CHATID, PM_LOGGER_GROUP_ID
@@ -25,6 +23,12 @@ from .pluginmanager import load_module
 
 ENV = bool(os.environ.get("ENV", False))
 LOGS = logging.getLogger("zthon")
+
+# ==============================================================================
+# mikey: 🛡️ حقنة الترياق (تعويض المتغيرات المفقودة في البداية)
+# ==============================================================================
+if not hasattr(Config, "COMMAND_HAND_LER"):
+    Config.COMMAND_HAND_LER = r"\."
 cmdhr = Config.COMMAND_HAND_LER
 
 if ENV:
@@ -35,89 +39,49 @@ elif os.path.exists("config.py"):
 bot = zedub
 DEV = 7422264678
 
-# ==============================================================================
-# mikey: دالة الإعداد (Setup) - مع ميزة تغيير الصورة ✅
-# ==============================================================================
 async def setup_bot():
-    """
-    تجهيز البوت بالكامل
-    """
-    print("mikey: 🚬 جاري تجهيز البوت وكشخته...")
-    
+    print("mikey: 🚬 جاري التشغيل...")
     TOKEN = os.environ.get("TG_BOT_TOKEN")
     if not TOKEN:
         LOGS.error("mikey: 🤬 وين التوكن؟")
         sys.exit(1)
-    
     Config.TG_BOT_TOKEN = TOKEN
 
     try:
         await zedub.connect()
-        
-        # تشغيل البوت المساعد
-        try:
-            await zedub.tgbot.start(bot_token=TOKEN)
-            bot_details = await zedub.tgbot.get_me()
-            Config.TG_BOT_USERNAME = f"@{bot_details.username}"
-            Config.BOT_USERNAME = f"@{bot_details.username}"
-            print(f"mikey: ✅ تم الاتصال بالبوت: {Config.TG_BOT_USERNAME}")
-            
-            # -----------------------------------------------------------
-            # mikey: هنا ميزة تغيير الاسم والصورة اللي طلبتها 📸
-            # -----------------------------------------------------------
+        if Config.TG_BOT_TOKEN:
             try:
-                # 1. تحديث الاسم
-                await zedub.tgbot(UpdateProfileRequest(first_name="Refz Assistant 🚬"))
-                
-                # 2. تحديث الصورة (UploadProfilePhotoRequest)
-                # نتأكد ان الصورة موجودة قبل ما نرفعها
-                photo_path = "zthon/zilzal/logozed.jpg" # المسار من السورس الأصلي
-                if os.path.exists(photo_path):
-                    file = await zedub.tgbot.upload_file(photo_path)
-                    await zedub.tgbot(UploadProfilePhotoRequest(file=file))
-                    print("mikey: 📸 تم تغيير صورة البوت بنجاح.")
-                else:
-                    print(f"mikey: صورة البوت غير موجودة في المسار {photo_path} (تجاوز)")
-                    
+                await zedub.tgbot.start(bot_token=Config.TG_BOT_TOKEN)
+                bot_details = await zedub.tgbot.get_me()
+                Config.TG_BOT_USERNAME = f"@{bot_details.username}"
             except Exception as e:
-                print(f"mikey: ما قدرت أغير صورة/اسم البوت (يمكن ما فيه صلاحية): {e}")
-            # -----------------------------------------------------------
-
-        except Exception as e:
-            LOGS.error(f"mikey: مشكلة في التوكن أو الاتصال: {e}")
-            sys.exit(1)
-
+                LOGS.error(f"فشل تشغيل البوت المساعد: {e}")
+        
         config = await zedub(functions.help.GetConfigRequest())
         for option in config.dc_options:
             if option.ip_address == zedub.session.server_address:
-                if zedub.session.dc_id != option.id:
-                    LOGS.warning(f"DC Mismatch: {zedub.session.dc_id}")
                 zedub.session.set_dc(option.id, option.ip_address, option.port)
                 zedub.session.save()
                 break
 
         zedub.me = await zedub.get_me()
         zedub.uid = zedub.tgbot.uid = utils.get_peer_id(zedub.me)
-
         if Config.OWNER_ID == 0:
             Config.OWNER_ID = utils.get_peer_id(zedub.me)
 
     except Exception as e:
-        LOGS.error(f"Error: {str(e)}")
-        sys.exit()
-
+        LOGS.error(f"خطأ في setup_bot: {str(e)}")
+        sys.exit(1)
 
 async def startupmessage():
     try:
-        if BOTLOG:
-            try:
-                Config.ZEDUBLOGO = await zedub.tgbot.send_file(
-                    BOTLOG_CHATID,
-                    "https://graph.org/file/5340a83ac9ca428089577.jpg",
-                    caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**",
-                    buttons=[(Button.url("Source", "https://t.me/def_Zoka"),)],
-                )
-            except: pass
+        if Config.BOTLOG:
+            await zedub.tgbot.send_file(
+                Config.BOTLOG_CHATID,
+                "https://graph.org/file/5340a83ac9ca428089577.jpg",
+                caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**",
+                buttons=[(Button.url("Source", "https://t.me/def_Zoka"),)],
+            )
     except: pass
 
     try:
@@ -129,12 +93,15 @@ async def startupmessage():
             text = message.text + "\n\n**•⎆┊تـم إعـادة تشغيـل السـورس بنجــاح 🧸♥️**"
             await zedub.edit_message(msg_details[0], msg_details[1], text)
             del_keyword_collectionlist("restart_update")
-    except: return None
+    except: pass
 
 async def mybot(): pass
 async def add_bot_to_logger_group(chat_id): pass
 async def saves(): pass
 
+# ==============================================================================
+# mikey: دالة التحميل المعدلة (Anti-Crash Version) 🛡️
+# ==============================================================================
 async def load_plugins(folder, extfolder=None):
     import glob
     import os
@@ -172,7 +139,22 @@ async def load_plugins(folder, extfolder=None):
             path1 = Path(f.name)
             shortname = path1.stem
             pluginname = shortname.replace(".py", "")
+            
+            # ========================================================
+            # mikey: 💉 الحقنة المباشرة - هنا نمنع الخطأ غصب
+            # ========================================================
+            if not hasattr(Config, "NO_LOAD"):
+                Config.NO_LOAD = []
+                
+            if not hasattr(Config, "TMP_DOWNLOAD_DIRECTORY"):
+                Config.TMP_DOWNLOAD_DIRECTORY = "./downloads/"
+                
+            if not hasattr(Config, "SUDO_COMMAND_HAND_LER"):
+                Config.SUDO_COMMAND_HAND_LER = r"\."
+            # ========================================================
+
             try:
+                # الآن مستحيل يكرش لأننا تأكدنا ان NO_LOAD موجودة فوق
                 if (pluginname not in Config.NO_LOAD):
                     flag = True
                     check = 0
@@ -207,45 +189,27 @@ async def load_plugins(folder, extfolder=None):
             failure.append("None")
         try:
             await zedub.tgbot.send_message(
-                BOTLOG_CHATID,
+                Config.BOTLOG_CHATID,
                 f'Imported: `{success}`\nFailed: `{", ".join(failure)}`',
             )
         except: pass
 
 async def verifyLoggerGroup():
     logger_id_str = os.environ.get("PRIVATE_GROUP_ID")
-    if not logger_id_str:
-        LOGS.error("mikey: 🤬 وين القناة؟")
-        sys.exit(1)
-        
+    if not logger_id_str: return
     try:
         logger_id = int(logger_id_str)
         Config.PRIVATE_GROUP_ID = logger_id
         Config.BOTLOG_CHATID = logger_id
-        
         try:
             addgvar("PRIVATE_GROUP_BOT_API_ID", logger_id)
             addgvar("PM_LOGGER_GROUP_ID", logger_id)
             addgvar("BOTLOG_CHATID", logger_id)
         except: pass
-
+        
         try:
             entity = await zedub.get_entity(logger_id)
-            print(f"mikey: ✅ القناة موجودة: {entity.title}")
-            try:
-                await zedub(EditTitleRequest(channel=entity, title="Refz Source Storage 📦"))
-            except: pass
-            
-            # تحديث صورة القناة
-            try:
-                photo_path = "zthon/zilzal/refz.jpg"
-                if os.path.exists(photo_path):
-                    await zedub(EditPhotoRequest(
-                        channel=entity,
-                        photo=await zedub.upload_file(photo_path)
-                    ))
-            except: pass
-
+            await zedub(EditTitleRequest(channel=entity, title="Refz Source Storage 📦"))
         except: pass
     except: pass
     return
