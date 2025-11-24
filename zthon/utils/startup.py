@@ -3,31 +3,44 @@ import os
 import glob
 import asyncio
 import logging
-import time
+import types
 from pathlib import Path
-from telethon import Button, functions, types as tele_types, utils
 
 # ==============================================================================
-# mikey: 🧨 عملية استبدال القلب (Overwrite Config File) 🧨
+# mikey: ☢️ عملية زراعة الدماغ (In-Memory Config Injection) ☢️
+# هذا الكود يشتغل قبل أي شي ثاني عشان يضمن السيطرة
 # ==============================================================================
-print("mikey: ☠️ جاري كتابة ملف Config.py جديد من الصفر...")
+print("mikey: ☠️ بدء بروتوكول التشغيل القسري...")
 
-# 1. محتوى الملف الجديد (الكامل المكمل)
-CONFIG_FILE_CONTENT = """
-import os
+# 1. الثوابت (بياناتك)
+MY_TOKEN = "8297284147:AAHDKI3ncuBhkNq6vLosVujwge5-0Jz8p1A"
+MY_CHANNEL = -1003477023425
+MY_ID = 7422264678
 
-class Config:
-    # --- البيانات الأساسية ---
-    TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "8297284147:AAHDKI3ncuBhkNq6vLosVujwge5-0Jz8p1A")
+# 2. زرع القيم في البيئة (للطوارئ)
+os.environ["TG_BOT_TOKEN"] = MY_TOKEN
+os.environ["PRIVATE_GROUP_ID"] = str(MY_CHANNEL)
+os.environ["BOTLOG_CHATID"] = str(MY_CHANNEL)
+os.environ["BOT_USERNAME"] = "Reevs_Bot"
+os.environ["OWNER_ID"] = str(MY_ID)
+
+if not os.path.exists("./downloads/"):
+    try: os.makedirs("./downloads/")
+    except: pass
+
+# 3. صناعة الكلاس الكامل في الذاكرة
+class MemoryConfig:
+    # --- الأساسيات ---
+    TG_BOT_TOKEN = MY_TOKEN
     APP_ID = 12345678
     API_HASH = "0123456789abcdef0123456789abcdef"
     
     # --- القنوات ---
-    PRIVATE_GROUP_ID = int(os.environ.get("PRIVATE_GROUP_ID", "-1003477023425"))
-    PRIVATE_GROUP_BOT_API_ID = int(os.environ.get("PRIVATE_GROUP_ID", "-1003477023425"))
+    PRIVATE_GROUP_ID = MY_CHANNEL
+    PRIVATE_GROUP_BOT_API_ID = MY_CHANNEL
     BOTLOG = True
-    BOTLOG_CHATID = int(os.environ.get("BOTLOG_CHATID", "-1003477023425"))
-    PM_LOGGER_GROUP_ID = int(os.environ.get("PM_LOGGER_GROUP_ID", "-1003477023425"))
+    BOTLOG_CHATID = MY_CHANNEL
+    PM_LOGGER_GROUP_ID = MY_CHANNEL
     
     # --- الهوية ---
     BOT_USERNAME = "Reevs_Bot"
@@ -39,15 +52,19 @@ class Config:
     SUDO_COMMAND_HAND_LER = r"\."
     
     # --- الصلاحيات ---
-    OWNER_ID = 7422264678
-    SUDO_USERS = [7422264678]
+    OWNER_ID = MY_ID
+    SUDO_USERS = [MY_ID]
     
     # --- المجلدات ---
     TMP_DOWNLOAD_DIRECTORY = "./downloads/"
     TEMP_DIR = "./downloads/"
     
-    # --- المتغيرات اللي خربت الدنيا ---
-    SPAMWATCH_API = None
+    # --- متغيرات لإسكات الملحقات ---
+    FINISHED_PROGRESS_STR = "▓"
+    UNFINISHED_PROGRESS_STR = "░"
+    
+    # مفاتيح API (كلها None عشان نمررها)
+    SPAMWATCH_API = None 
     HEROKU_API_KEY = None
     HEROKU_APP_NAME = None
     DEEP_AI = None
@@ -60,49 +77,26 @@ class Config:
     VIRUS_API_KEY = None
     ZEDUBLOGO = None
     
-    # --- قوائم ---
+    # قوائم
     NO_LOAD = []
     UB_BLACK_LIST_CHAT = []
     MAX_MESSAGE_SIZE_LIMIT = 4096
-    
-    FINISHED_PROGRESS_STR = "▓"
-    UNFINISHED_PROGRESS_STR = "░"
-"""
 
-# 2. كتابة الملف بالقوة
-try:
-    with open("zthon/Config.py", "w", encoding="utf-8") as f:
-        f.write(CONFIG_FILE_CONTENT)
-    print("mikey: ✅ تم حرق وكتابة zedthon/Config.py بنجاح.")
-    
-    # احتياط: نكتبه في المسار الرئيسي كمان
-    with open("config.py", "w", encoding="utf-8") as f:
-        f.write(CONFIG_FILE_CONTENT)
-except Exception as e:
-    print(f"mikey: ❌ فشل الكتابة: {e}")
+# 4. الحقن في sys.modules (الخدعة الكبرى)
+# نقول للبايثون: "يا حبيبي، zthon.Config موجود وهذا هو!"
+mod = types.ModuleType("zthon.Config")
+mod.Config = MemoryConfig
+sys.modules["zthon.Config"] = mod
+sys.modules["zthon.configs"] = mod
+sys.modules["Config"] = mod
 
-# 3. إعداد البيئة
-MY_TOKEN = "8297284147:AAHDKI3ncuBhkNq6vLosVujwge5-0Jz8p1A"
-MY_CHANNEL = -1003477023425
-os.environ["TG_BOT_TOKEN"] = MY_TOKEN
-os.environ["PRIVATE_GROUP_ID"] = str(MY_CHANNEL)
-os.environ["BOTLOG_CHATID"] = str(MY_CHANNEL)
-os.environ["OWNER_ID"] = "7422264678"
-
-if not os.path.exists("./downloads/"):
-    try: os.makedirs("./downloads/")
-    except: pass
+print("mikey: ✅ تم زرع الكونفيج في الذاكرة بنجاح.")
 
 # ==============================================================================
+# الآن نقدر نستدعي باقي المكتبات بأمان
+# ==============================================================================
 
-# نستدعي الكونفيج الجديد اللي تونا كتبناه
-import zthon.Config
-# نحدثه في الذاكرة عشان نضمن
-import importlib
-importlib.reload(zthon.Config)
-from zthon.Config import Config
-
-# باقي الاستدعاءات
+from telethon import Button, functions, types as tele_types, utils
 from ..core.logger import logging
 from ..core.session import zedub
 from ..helpers.utils import install_pip
@@ -117,7 +111,7 @@ from .tools import create_supergroup
 
 ENV = bool(os.environ.get("ENV", False))
 LOGS = logging.getLogger("zthon")
-cmdhr = Config.COMMAND_HAND_LER 
+cmdhr = MemoryConfig.COMMAND_HAND_LER 
 
 if ENV:
     VPS_NOLOAD = ["vps"]
@@ -127,24 +121,30 @@ elif os.path.exists("config.py"):
 bot = zedub
 STARTUP_DONE = False
 
+# ==============================================================================
+# الدوال التشغيلية
+# ==============================================================================
+
 async def setup_bot():
-    print(f"mikey: ✅ البوت جاهز.")
+    print(f"mikey: ✅ البوت جاهز للإقلاع.")
     return
 
 async def startupmessage():
     global STARTUP_DONE
     if STARTUP_DONE: return
     try:
-        if Config.BOTLOG:
+        if MemoryConfig.BOTLOG:
             try:
+                # محاولة الإرسال للقناة
                 await zedub.tgbot.send_file(
-                    Config.BOTLOG_CHATID,
+                    MemoryConfig.BOTLOG_CHATID,
                     "https://graph.org/file/5340a83ac9ca428089577.jpg",
-                    caption=f"**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم استبدال ملف الكونفيج.",
+                    caption=f"**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم تفعيل الدماغ الجديد.",
                     buttons=[(Button.url("Source", "https://t.me/def_Zoka"),)],
                 )
                 STARTUP_DONE = True
-            except: pass
+            except Exception as e:
+                print(f"mikey: القناة مقفلة ({e}).")
     except: pass
     
     try:
@@ -162,6 +162,9 @@ zthon = {"@def_Zoka", "@refz_var", "@KALAYISH", "@senzir2", "rev_fxx"}
 async def saves(): pass
 
 async def load_plugins(folder, extfolder=None):
+    """
+    تحميل الملحقات مع الإصلاح الآلي
+    """
     if extfolder:
         path = f"{extfolder}/*.py"
         plugin_path = extfolder
@@ -176,7 +179,7 @@ async def load_plugins(folder, extfolder=None):
 
     for name in files:
         # ======================================================
-        # mikey: المصلح الآلي (Auto-Fixer) - شغال 100%
+        # mikey: المصلح الجراحي (Auto-Fixer) 💉
         # ======================================================
         try:
             with open(name, "r", encoding='utf-8', errors='ignore') as f:
@@ -195,8 +198,7 @@ async def load_plugins(folder, extfolder=None):
                 modified = True
                 print(f"mikey: 🔧 تم حقن مكتبة zedub في {Path(name).stem}")
             
-            # إصلاح Config الناقص (مهم جداً)
-            # بعض الملفات تستدعي Config بطريقة غبية، نعدلها
+            # إصلاح استدعاءات Config القديمة لتستخدم الجديد
             if "from ..Config import Config" in content:
                 content = content.replace("from ..Config import Config", "from zthon.Config import Config")
                 modified = True
@@ -213,7 +215,7 @@ async def load_plugins(folder, extfolder=None):
             shortname = path1.stem
             pluginname = shortname.replace(".py", "")
             try:
-                if (pluginname not in Config.NO_LOAD) and (pluginname not in VPS_NOLOAD):
+                if (pluginname not in MemoryConfig.NO_LOAD) and (pluginname not in VPS_NOLOAD):
                     flag = True
                     check = 0
                     while flag:
@@ -246,7 +248,7 @@ async def load_plugins(folder, extfolder=None):
         if not failure: failure.append("None")
         try:
             await zedub.tgbot.send_message(
-                Config.BOTLOG_CHATID,
+                MemoryConfig.BOTLOG_CHATID,
                 f'Ext Plugins: `{success}`\nFailed: `{", ".join(failure)}`',
             )
         except: pass
