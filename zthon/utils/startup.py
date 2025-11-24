@@ -25,9 +25,9 @@ ENV = bool(os.environ.get("ENV", False))
 LOGS = logging.getLogger("zthon")
 
 # ==============================================================================
-# mikey: 💉 التجهيز الأولي (Pre-Injection)
+# mikey: 💉 قائمة الحقن الشاملة (تحديث v3) 💉
+# ضفت لك THUMB_IMAGE وكل شلة الصور
 # ==============================================================================
-# قائمة بكل المتغيرات اللي تسبب صداع، بنحشرها غصب
 ALL_MISSING_VARS = [
     "NO_LOAD", "UB_BLACK_LIST_CHAT", "SUDO_USERS", 
     "SPAMWATCH_API", "HEROKU_API_KEY", "HEROKU_APP_NAME",
@@ -35,17 +35,23 @@ ALL_MISSING_VARS = [
     "CHROME_DRIVER", "GOOGLE_CHROME_BIN", "WEATHER_API", "VIRUS_API_KEY",
     "ZEDUBLOGO", "TMP_DOWNLOAD_DIRECTORY", "TEMP_DIR",
     "COMMAND_HAND_LER", "SUDO_COMMAND_HAND_LER",
-    "FINISHED_PROGRESS_STR", "UNFINISHED_PROGRESS_STR"
+    "FINISHED_PROGRESS_STR", "UNFINISHED_PROGRESS_STR",
+    # --- الإضافات الجديدة للصور ---
+    "THUMB_IMAGE", "ALIVE_PIC", "ALIVE_LOGO", "DIGITAL_PIC", "DEFAULT_PIC",
+    "START_IMG", "PING_PIC", "HELP_PIC"
 ]
 
-# حقن مبدئي في الذاكرة
+# حقن المتغيرات
 for var in ALL_MISSING_VARS:
     if not hasattr(Config, var):
-        # بعضها يحتاج قيم محددة مو None
+        # نعطيها قيم افتراضية حسب نوعها
         if "DIR" in var: setattr(Config, var, "./downloads/")
         elif "LIST" in var or "LOAD" in var: setattr(Config, var, [])
         elif "STR" in var: setattr(Config, var, "▓")
         elif "HAND_LER" in var: setattr(Config, var, r"\.")
+        # الصور نعطيها رابط وهمي أو None، الغالبية تقبل None وتستخدم الافتراضي
+        elif "IMAGE" in var or "PIC" in var or "LOGO" in var or "IMG" in var: 
+            setattr(Config, var, None) 
         else: setattr(Config, var, None)
 
 cmdhr = Config.COMMAND_HAND_LER
@@ -59,7 +65,7 @@ bot = zedub
 DEV = 7422264678
 
 async def setup_bot():
-    print("mikey: 🚬 التشغيل...")
+    print("mikey: 🚬 جاري التشغيل...")
     TOKEN = os.environ.get("TG_BOT_TOKEN")
     if not TOKEN:
         LOGS.error("mikey: 🤬 التوكن مفقود!")
@@ -97,7 +103,7 @@ async def startupmessage():
             await zedub.tgbot.send_file(
                 Config.BOTLOG_CHATID,
                 "https://graph.org/file/5340a83ac9ca428089577.jpg",
-                caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم حقن جميع المتغيرات.",
+                caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم إصلاح THUMB_IMAGE.",
                 buttons=[(Button.url("Source", "https://t.me/def_Zoka"),)],
             )
     except: pass
@@ -115,7 +121,7 @@ async def add_bot_to_logger_group(chat_id): pass
 async def saves(): pass
 
 # ==============================================================================
-# mikey: 💊 دالة التحميل مع الحقن الجماعي (Mass Injection)
+# mikey: دالة التحميل (نفسها، بس عشان نضمن التحديث)
 # ==============================================================================
 async def load_plugins(folder, extfolder=None):
     import glob
@@ -134,7 +140,7 @@ async def load_plugins(folder, extfolder=None):
     failure = []
 
     for name in files:
-        # المصلح الآلي للكود
+        # المصلح الآلي
         try:
             with open(name, "r", encoding='utf-8', errors='ignore') as f:
                 content = f.read()
@@ -156,16 +162,15 @@ async def load_plugins(folder, extfolder=None):
             pluginname = shortname.replace(".py", "")
             
             # ========================================================
-            # mikey: 💉 الحقنة الجماعية لكل ملف 💉
-            # نتأكد إن كل المتغيرات موجودة قبل تحميل أي ملف
+            # mikey: 💉 إعادة الحقن للتأكيد (داخل اللوب)
             # ========================================================
             for var in ALL_MISSING_VARS:
                 if not hasattr(Config, var):
-                    # نعطيها قيم افتراضية حسب نوعها
                     if "DIR" in var: setattr(Config, var, "./downloads/")
                     elif "LIST" in var or "LOAD" in var: setattr(Config, var, [])
                     elif "STR" in var: setattr(Config, var, "▓")
                     elif "HAND_LER" in var: setattr(Config, var, r"\.")
+                    elif "IMAGE" in var or "PIC" in var or "LOGO" in var: setattr(Config, var, None)
                     else: setattr(Config, var, None)
             # ========================================================
 
@@ -190,7 +195,7 @@ async def load_plugins(folder, extfolder=None):
                         except Exception as e:
                             if shortname not in failure:
                                 failure.append(shortname)
-                            # نطبع الخطأ عشان نعرف وش باقي
+                            # هذا السطر مهم عشان نعرف وش المتغير التالي الناقص
                             LOGS.info(f"فشل تحميل {shortname}: {e}")
                             break
                 else:
