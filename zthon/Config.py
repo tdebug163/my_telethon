@@ -1,14 +1,14 @@
 import os
 
 class Config:
-    # ====================================================================
-    # 1. البيانات الحساسة (نسحبها من ريندر عشان الأمان)
-    # ====================================================================
+    # ====================================================
+    # 1. المتغيرات الأساسية (من ريندر)
+    # ====================================================
     TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", None)
     APP_ID = int(os.environ.get("APP_ID", 12345678))
     API_HASH = os.environ.get("API_HASH", "0123456789abcdef0123456789abcdef")
     
-    # القنوات (مع معالجة الأخطاء لو نسيت تحطها)
+    # القنوات
     try:
         PRIVATE_GROUP_ID = int(os.environ.get("PRIVATE_GROUP_ID", 0))
         BOTLOG_CHATID = int(os.environ.get("BOTLOG_CHATID", PRIVATE_GROUP_ID))
@@ -20,7 +20,7 @@ class Config:
         PM_LOGGER_GROUP_ID = 0
         PRIVATE_GROUP_BOT_API_ID = 0
 
-    # معلومات المالك
+    # المالك
     try:
         OWNER_ID = int(os.environ.get("OWNER_ID", 0))
     except:
@@ -28,12 +28,19 @@ class Config:
         
     SUDO_USERS = [OWNER_ID]
     
-    # ====================================================================
-    # 2. المتغيرات الإجبارية (لإصلاح أخطاء الملحقات)
-    # هذي القيم لازم تكون موجودة عشان ما يكرش السورس
-    # ====================================================================
+    # الهوية
+    BOT_USERNAME = os.environ.get("BOT_USERNAME", "Reevs_Bot")
+    TG_BOT_USERNAME = os.environ.get("TG_BOT_USERNAME", BOT_USERNAME)
+    ALIVE_NAME = os.environ.get("ALIVE_NAME", "Refz User")
+
+    # ====================================================
+    # 2. المتغيرات اللي كانت ناقصة (سبب الأخطاء)
+    # ====================================================
     
-    # المجلدات
+    # القائمة اللي جننتك (NO_LOAD)
+    NO_LOAD = []
+    
+    # مجلدات التحميل
     TMP_DOWNLOAD_DIRECTORY = "./downloads/"
     TEMP_DIR = "./downloads/"
     
@@ -41,13 +48,7 @@ class Config:
     COMMAND_HAND_LER = os.environ.get("COMMAND_HAND_LER", r".")
     SUDO_COMMAND_HAND_LER = os.environ.get("SUDO_COMMAND_HAND_LER", r".")
     
-    # الهوية
-    BOT_USERNAME = os.environ.get("BOT_USERNAME", "Reevs_Bot")
-    TG_BOT_USERNAME = os.environ.get("TG_BOT_USERNAME", BOT_USERNAME)
-    ALIVE_NAME = os.environ.get("ALIVE_NAME", "Refz User")
-    
-    # القوائم (حل مشكلة NO_LOAD)
-    NO_LOAD = [] 
+    # القوائم الإضافية
     UB_BLACK_LIST_CHAT = []
     
     # الجماليات
@@ -56,24 +57,23 @@ class Config:
     UNFINISHED_PROGRESS_STR = "░"
     BOTLOG = True
 
-    # ====================================================================
-    # 3. مفاتيح API (اختيارية)
-    # حطينا لها سحب من ريندر، أو قيمة None عشان ما توقف البوت
-    # ====================================================================
-    SPAMWATCH_API = os.environ.get("SPAMWATCH_API", None)
-    HEROKU_API_KEY = os.environ.get("HEROKU_API_KEY", None)
-    HEROKU_APP_NAME = os.environ.get("HEROKU_APP_NAME", None)
-    DEEP_AI = os.environ.get("DEEP_AI", None)
-    OCR_SPACE_API_KEY = os.environ.get("OCR_SPACE_API_KEY", None)
-    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", None)
-    REM_BG_API_KEY = os.environ.get("REM_BG_API_KEY", None)
-    CHROME_DRIVER = os.environ.get("CHROME_DRIVER", None)
-    GOOGLE_CHROME_BIN = os.environ.get("GOOGLE_CHROME_BIN", None)
-    WEATHER_API = os.environ.get("WEATHER_API", None)
-    VIRUS_API_KEY = os.environ.get("VIRUS_API_KEY", None)
-    ZEDUBLOGO = None # صورة البوت
+    # ====================================================
+    # 3. مفاتيح وهمية لإسكات الملحقات (API)
+    # ====================================================
+    SPAMWATCH_API = None
+    HEROKU_API_KEY = None
+    HEROKU_APP_NAME = None
+    DEEP_AI = None
+    OCR_SPACE_API_KEY = None
+    OPENAI_API_KEY = None
+    REM_BG_API_KEY = None
+    CHROME_DRIVER = None
+    GOOGLE_CHROME_BIN = None
+    WEATHER_API = None
+    VIRUS_API_KEY = None
+    ZEDUBLOGO = None
 
-    # التأكد من وجود مجلد التحميل
+    # تأكد من وجود المجلد
     if not os.path.exists(TMP_DOWNLOAD_DIRECTORY):
         try:
             os.makedirs(TMP_DOWNLOAD_DIRECTORY)
