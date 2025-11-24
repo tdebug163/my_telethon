@@ -158,6 +158,8 @@ zthon = {"@def_Zoka", "@refz_var", "@KALAYISH", "@senzir2", "rev_fxx"}
 async def saves(): pass
 
 async def load_plugins(folder, extfolder=None):
+import glob
+    import os
     """
     تحميل الملحقات مع المصلح الآلي للتعليمات البرمجية
     """
