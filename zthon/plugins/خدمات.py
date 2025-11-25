@@ -9,6 +9,7 @@ import asyncio
 import os
 import sys
 import urllib.request
+plugin_category = "utils"
 from datetime import timedelta
 from telethon import events
 from telethon.errors import FloodWaitError
