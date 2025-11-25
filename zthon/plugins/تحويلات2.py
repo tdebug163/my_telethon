@@ -21,7 +21,7 @@ from telethon.tl.functions.messages import ImportChatInviteRequest as Get
 from telethon.tl.functions.messages import SendMediaRequest
 from telethon.utils import get_attributes
 
-from zthon import zedub
+from zthon.core.session import zedub as zthon
 
 from ..Config import Config
 from ..core.logger import logging
