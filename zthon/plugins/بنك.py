@@ -9,7 +9,7 @@ from ..helpers import get_user_from_event
 from telethon import types
 from random import randint
 import random
-from . import zthon
+from zthon.core.session import zedub as zthon
 from ..core.managers import edit_delete, edit_or_reply
 
 import asyncio
