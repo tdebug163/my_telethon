@@ -34,13 +34,14 @@ class Config:
     ALIVE_NAME = os.environ.get("ALIVE_NAME", "Refz User")
 
     # ====================================================
-    # 2. المتغيرات اللي كانت ناقصة (سبب الأخطاء)
+    # 2. المتغيرات التجميلية والإضافية (لإصلاح الملحقات)
     # ====================================================
     
-    # القائمة اللي جننتك (NO_LOAD)
+    # القوائم
     NO_LOAD = []
+    UB_BLACK_LIST_CHAT = []
     
-    # مجلدات التحميل
+    # المجلدات
     TMP_DOWNLOAD_DIRECTORY = "./downloads/"
     TEMP_DIR = "./downloads/"
     
@@ -48,17 +49,27 @@ class Config:
     COMMAND_HAND_LER = os.environ.get("COMMAND_HAND_LER", r".")
     SUDO_COMMAND_HAND_LER = os.environ.get("SUDO_COMMAND_HAND_LER", r".")
     
-    # القوائم الإضافية
-    UB_BLACK_LIST_CHAT = []
-    
     # الجماليات
     MAX_MESSAGE_SIZE_LIMIT = 4096
     FINISHED_PROGRESS_STR = "▓"
     UNFINISHED_PROGRESS_STR = "░"
     BOTLOG = True
+    
+    # الصور (حل مشكلة THUMB_IMAGE)
+    # حطيت لك روابط افتراضية عشان ما يكرش، تقدر تغيرها بعدين
+    THUMB_IMAGE = "https://graph.org/file/5340a83ac9ca428089577.jpg"
+    ALIVE_PIC = "https://graph.org/file/5340a83ac9ca428089577.jpg"
+    ALIVE_LOGO = "https://graph.org/file/5340a83ac9ca428089577.jpg"
+    START_IMG = "https://graph.org/file/5340a83ac9ca428089577.jpg"
+    DIGITAL_PIC = "https://graph.org/file/5340a83ac9ca428089577.jpg"
+    DEFAULT_PIC = "https://graph.org/file/5340a83ac9ca428089577.jpg"
+
+    # التيليجراف (حل المشكلة الجديدة)
+    TELEGRAPH_SHORT_NAME = "RefzUser"
+    TELEGRAPH_TOKEN = None
 
     # ====================================================
-    # 3. مفاتيح وهمية لإسكات الملحقات (API)
+    # 3. مفاتيح وهمية (API)
     # ====================================================
     SPAMWATCH_API = None
     HEROKU_API_KEY = None
@@ -73,7 +84,7 @@ class Config:
     VIRUS_API_KEY = None
     ZEDUBLOGO = None
 
-    # تأكد من وجود المجلد
+    # إنشاء المجلد
     if not os.path.exists(TMP_DOWNLOAD_DIRECTORY):
         try:
             os.makedirs(TMP_DOWNLOAD_DIRECTORY)
