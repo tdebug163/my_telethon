@@ -48,17 +48,17 @@ class Config:
     COMMAND_HAND_LER = os.environ.get("COMMAND_HAND_LER", r".")
     SUDO_COMMAND_HAND_LER = os.environ.get("SUDO_COMMAND_HAND_LER", r".")
     
-    # الجماليات
+    # الجماليات (حل مشكلة الضغط)
     MAX_MESSAGE_SIZE_LIMIT = 4096
     FINISHED_PROGRESS_STR = "▓"
     UNFINISHED_PROGRESS_STR = "░"
     BOTLOG = True
     
-    # الصور (قيم افتراضية)
+    # الصور
     THUMB_IMAGE = "https://graph.org/file/5340a83ac9ca428089577.jpg"
     
     # ====================================================
-    # 3. مفاتيح API (قيم None عشان ما يكرش)
+    # 3. مفاتيح API (حل مشكلة SPAMWATCH وربعها)
     # ====================================================
     SPAMWATCH_API = None
     HEROKU_API_KEY = None
