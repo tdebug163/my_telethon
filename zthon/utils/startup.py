@@ -5,7 +5,7 @@ import asyncio
 from pathlib import Path
 from telethon import Button, functions, types, utils
 from telethon.tl.functions.channels import JoinChannelRequest, EditTitleRequest, EditPhotoRequest, EditAdminRequest
-from telethon.tl.functions.photos import UploadProfilePhotoRequest
+from telethon.tl.functions.photos import UploadProfilePhotoRequest 
 from telethon.tl.types import ChatAdminRights
 
 from zthon import BOTLOG, BOTLOG_CHATID, PM_LOGGER_GROUP_ID
@@ -33,26 +33,9 @@ elif os.path.exists("config.py"):
 bot = zedub
 DEV = 7422264678
 
-# ==============================================================================
-# mikey: 🔧 إصلاح مكتبة الميوزك (Dependency Fix)
-# ==============================================================================
-try:
-    import ntgcalls
-except ImportError:
-    print("mikey: 🎵 جاري إصلاح مكتبة الميوزك...")
-    # نثبت نسخة قديمة متوافقة لأن الجديدة خربانة مع السورس هذا
-    os.system("pip3 install pytgcalls==3.0.0.dev24") 
-
-# ==============================================================================
-
 async def setup_bot():
-    print("mikey: 🚬 جاري التشغيل...")
-    TOKEN = os.environ.get("TG_BOT_TOKEN")
-    if not TOKEN:
-        LOGS.error("mikey: 🤬 التوكن مفقود!")
-        sys.exit(1)
-    Config.TG_BOT_TOKEN = TOKEN
-
+    print("mikey: 🚬 التشغيل...")
+    # نعتمد على Config اللي عبيناه
     try:
         await zedub.connect()
         if Config.TG_BOT_TOKEN:
@@ -60,15 +43,6 @@ async def setup_bot():
                 await zedub.tgbot.start(bot_token=Config.TG_BOT_TOKEN)
                 bot_details = await zedub.tgbot.get_me()
                 Config.TG_BOT_USERNAME = f"@{bot_details.username}"
-                
-                # تحديث الاسم والصورة
-                try:
-                    await zedub.tgbot(UpdateProfileRequest(first_name="Refz Assistant 🚬"))
-                    photo_path = "zthon/zilzal/logozed.jpg"
-                    if os.path.exists(photo_path):
-                        file = await zedub.tgbot.upload_file(photo_path)
-                        await zedub.tgbot(UploadProfilePhotoRequest(file=file))
-                except: pass
             except: pass
         
         config = await zedub(functions.help.GetConfigRequest())
@@ -85,7 +59,7 @@ async def setup_bot():
 
     except Exception as e:
         LOGS.error(f"Error: {str(e)}")
-        sys.exit()
+        sys.exit(1)
 
 async def startupmessage():
     try:
@@ -93,7 +67,7 @@ async def startupmessage():
             await zedub.tgbot.send_file(
                 Config.BOTLOG_CHATID,
                 "https://graph.org/file/5340a83ac9ca428089577.jpg",
-                caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم تفعيل المصحح الآلي للملفات.",
+                caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم حقن NO_LOAD بنجاح.",
                 buttons=[(Button.url("Source", "https://t.me/def_Zoka"),)],
             )
     except: pass
@@ -110,13 +84,23 @@ async def mybot(): pass
 async def add_bot_to_logger_group(chat_id): pass
 async def saves(): pass
 
-# ==============================================================================
-# mikey: 👨‍⚕️ الجراح الآلي (The Auto-Surgeon)
-# ==============================================================================
 async def load_plugins(folder, extfolder=None):
     import glob
     import os
     
+    # ==============================================================================
+    # mikey: 💉 الحقنة القاتلة للخطأ (NO_LOAD Injection)
+    # ==============================================================================
+    # نتأكد إن المتغير موجود قبل ما نبدأ أي شي
+    if not hasattr(Config, "NO_LOAD"):
+        print("mikey: ⚠️ تم اكتشاف غياب NO_LOAD.. جاري الحقن.")
+        Config.NO_LOAD = []
+        
+    # ونحقن الباقين احتياط عشان ما يرجع يبكي
+    if not hasattr(Config, "TMP_DOWNLOAD_DIRECTORY"): Config.TMP_DOWNLOAD_DIRECTORY = "./downloads/"
+    if not hasattr(Config, "SUDO_COMMAND_HAND_LER"): Config.SUDO_COMMAND_HAND_LER = r"\."
+    # ==============================================================================
+
     if extfolder:
         path = f"{extfolder}/*.py"
         plugin_path = extfolder
@@ -130,58 +114,31 @@ async def load_plugins(folder, extfolder=None):
     failure = []
 
     for name in files:
+        # المصلح الآلي
         try:
             with open(name, "r", encoding='utf-8', errors='ignore') as f:
                 content = f.read()
-            
-            original_content = content
             modified = False
-            
-            # 1. إصلاح الفاصلة الملعونة (الردود.py)
             if "‚" in content:
                 content = content.replace("‚", ",")
                 modified = True
-            
-            # 2. إصلاح zedub و client (رشق تيك توك وغيرها)
-            if "client" in content and "client =" not in content and "client=" not in content:
-                # نحقن تعريف client
-                content = "from zthon.core.session import zedub\nclient = zedub\n" + content
-                modified = True
-            elif "zedub" in content and "from zthon.core.session import zedub" not in content:
+            if "zedub" in content and "from zthon.core.session import zedub" not in content:
                 content = "from zthon.core.session import zedub\n" + content
                 modified = True
-
-            # 3. إصلاح plugin_category (خدمات.py)
-            if "plugin_category" in content and "plugin_category =" not in content:
-                content = 'plugin_category = "utils"\n' + content
-                modified = True
-
-            # 4. إصلاح Config
             if "from ..Config import Config" in content:
                 content = content.replace("from ..Config import Config", "from zthon.Config import Config")
                 modified = True
-            if "from zthon import Config" in content:
-                content = content.replace("from zthon import Config", "from zthon.Config import Config")
-                modified = True
-
-            # 5. محاولة إصلاح الأقواس (تخبيص.py)
-            # هذا تصحيح غبي بس ممكن يمشي الحال
-            if "])" in content and ")]" not in content: 
-               # احيانا المطور يكتب ]) بدال )]
-               pass 
-
             if modified:
-                print(f"mikey: 🔧 تم إصلاح الكود في {Path(name).stem}")
                 with open(name, "w", encoding='utf-8') as f:
                     f.write(content)
-        except Exception as fix_err:
-            print(f"mikey: فشل الإصلاح لـ {name}: {fix_err}")
+        except: pass
 
         with open(name) as f:
             path1 = Path(f.name)
             shortname = path1.stem
             pluginname = shortname.replace(".py", "")
             try:
+                # الآن مستحيل يكرش هنا لأننا حقناها فوق
                 if (pluginname not in Config.NO_LOAD):
                     flag = True
                     check = 0
@@ -191,6 +148,7 @@ async def load_plugins(folder, extfolder=None):
                             if shortname in failure:
                                 failure.remove(shortname)
                             success += 1
+                            # LOGS.info(f"تـم تثبيت ملـف {shortname}")
                             break
                         except ModuleNotFoundError as e:
                             install_pip(e.name)
@@ -199,24 +157,15 @@ async def load_plugins(folder, extfolder=None):
                                 failure.append(shortname)
                             if check > 5:
                                 break
+                        except AttributeError as ae:
+                            # لو طلع خطأ هنا، بنعرفه ونحقنه المرة الجاية
+                            LOGS.info(f"متغير ناقص في {shortname}: {ae}")
+                            failure.append(shortname)
+                            break
                         except Exception as e:
-                            # هنا بنسوي حركة خبيثة: اذا فشل بسبب خطأ في السطر (Syntax)
-                            # نحاول نحذف السطر الخربان ونعيد التحميل!
-                            if "unterminated string" in str(e) or "parenthesis" in str(e):
-                                print(f"mikey: ✂️ محاولة قص السطر الخربان في {shortname}...")
-                                try:
-                                    # قراءة الملف سطور
-                                    with open(name, "r", encoding='utf-8') as f_bad:
-                                        lines = f_bad.readlines()
-                                    
-                                    # محاولة معرفة رقم السطر من الخطأ (غالبا يكون مكتوب)
-                                    # هذي صعبة برمجيا، بس بنجرب نعيد كتابة الملف بدون سطور معينة اذا قدرنا
-                                    pass
-                                except: pass
-                            
-                            if shortname not in failure:
-                                failure.append(shortname)
-                            LOGS.info(f"فشل تحميل {shortname}: {e}")
+                            # نتجاوز الملفات المضروبة برمجياً (Syntax Error)
+                            LOGS.info(f"فشل {shortname}: {e}")
+                            failure.append(shortname)
                             break
                 else:
                     os.remove(Path(f"{plugin_path}/{shortname}.py"))
