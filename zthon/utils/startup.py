@@ -3,10 +3,11 @@ import os
 import sys
 import asyncio
 from pathlib import Path
-from telethon import Button, functions, types, utils
+from telethon import Button, functions, types, utils, events
 from telethon.tl.functions.channels import JoinChannelRequest, EditTitleRequest, EditPhotoRequest, EditAdminRequest
 from telethon.tl.functions.photos import UploadProfilePhotoRequest 
 from telethon.tl.types import ChatAdminRights
+from telethon.tl.functions.account import UpdateProfileRequest
 
 from zthon import BOTLOG, BOTLOG_CHATID, PM_LOGGER_GROUP_ID
 from ..Config import Config
@@ -22,14 +23,13 @@ from ..sql_helper.globals import addgvar, delgvar, gvarstatus
 from .pluginmanager import load_module
 
 # ==============================================================================
-# mikey: 🎵 إصلاح الميوزك (العودة للزمن الجميل)
+# mikey: 🎵 محاولة أخيرة لإصلاح الميوزك
 # ==============================================================================
 try:
-    from pytgcalls import idle
+    import pytgcalls
 except ImportError:
-    print("mikey: 🎵 جاري تثبيت نسخة الميوزك القديمة (0.9.5)...")
-    os.system("pip3 install py-tgcalls==0.9.5")
-    os.system("pip3 install pytgcalls==0.9.5") 
+    print("mikey: 🎵 تثبيت pytgcalls...")
+    os.system("pip3 install py-tgcalls==0.9.5") # النسخة القديمة المستقرة
 
 ENV = bool(os.environ.get("ENV", False))
 LOGS = logging.getLogger("zthon")
@@ -93,12 +93,19 @@ async def setup_bot():
         await zedub.connect()
         
         # ========================================================
-        # mikey: 💉 ترقيع ar_cmd (حل مشكلة بنك ورشق)
-        # بنخلي ar_cmd هي نفسها on (أحنا نضحك على السورس)
+        # mikey: 🛠️ إصلاح ar_cmd الجذري (القسطرة)
+        # هذا الكود يصنع الدالة اللي كانت ناقصة ويخليها سليمة
         # ========================================================
+        def ar_cmd_wrapper(pattern=None, **kwargs):
+            # نتأكد ان الاوامر صادرة من المالك (outgoing=True)
+            if pattern:
+                return zedub.on(events.NewMessage(pattern=pattern, outgoing=True, **kwargs))
+            return zedub.on(events.NewMessage(outgoing=True, **kwargs))
+            
         if not hasattr(zedub, "ar_cmd"):
-            print("mikey: 🔧 تم اختراع دالة ar_cmd للعميل.")
-            setattr(zedub, "ar_cmd", zedub.on)
+            print("mikey: 🔧 تم زراعة ar_cmd بنجاح.")
+            setattr(zedub, "ar_cmd", ar_cmd_wrapper)
+        # ========================================================
 
         if Config.TG_BOT_TOKEN:
             try:
@@ -134,7 +141,7 @@ async def startupmessage():
             await zedub.tgbot.send_file(
                 Config.BOTLOG_CHATID,
                 "https://graph.org/file/5340a83ac9ca428089577.jpg",
-                caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم إصلاح ar_cmd والميوزك.",
+                caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ الأوامر جاهزة.",
                 buttons=[(Button.url("Source", "https://t.me/def_Zoka"),)],
             )
     except: pass
@@ -170,62 +177,38 @@ async def load_plugins(folder, extfolder=None):
     failure = []
 
     for name in files:
-        # ========================================================
-        # mikey: المصلح الجراحي (تحديث للأخطاء الجديدة)
-        # ========================================================
         try:
             with open(name, "r", encoding='utf-8', errors='ignore') as f:
                 content = f.read()
             modified = False
-            
-            # فاصلة الردود
             if "‚" in content:
                 content = content.replace("‚", ",")
                 modified = True
             
-            # تعريف zedub
+            # اصلاح zedub واستيراداته
             if "zedub" in content and "from zthon.core.session import zedub" not in content:
                 content = "from zthon.core.session import zedub\n" + content
                 modified = True
             
-            # تعريف client (للملفات اللي تستخدم client بدال zedub)
-            if "client" in content and "client =" not in content and "from zthon.core.session import zedub" not in content:
-                 content = "from zthon.core.session import zedub as client\n" + content
-                 modified = True
+            # اصلاح bot_pms
+            if "from zthon.Config import zedub" in content: # استدعاء خاطئ
+                content = content.replace("from zthon.Config import zedub", "from zthon.core.session import zedub")
+                modified = True
 
-            # تعريف zthon (لملف spam.py وغيره)
-            if "zthon" in content and "from zthon.core.session import zedub as zthon" not in content and "import zthon" not in content:
-                 # نتأكد انه ما يعرفه كمتغير محلي
-                 if "zthon =" not in content:
-                     content = "from zthon.core.session import zedub as zthon\n" + content
+            # اصلاح تحويلات
+            if "name 'zedub' is not defined" in str(failure): # استباقي
+                 if "zedub" in content and "import zedub" not in content:
+                     content = "from zthon.core.session import zedub\n" + content
                      modified = True
 
-            # إصلاح استدعاء Config
             if "from ..Config import Config" in content:
                 content = content.replace("from ..Config import Config", "from zthon.Config import Config")
                 modified = True
-            if "from zthon import Config" in content:
-                content = content.replace("from zthon import Config", "from zthon.Config import Config")
-                modified = True
-                
-            # إصلاح (تخبيص.py) - القوس الغلط
-            if "]" in content and "list = (" in content: # محاولة تقريبية
-                 content = content.replace("]", ")") # هذا خطير بس بنجرب
-                 # الأفضل: استبدال السطر الخربان لو لقيناه
-                 if '( "3" ,' in content and ']' in content: # السطر 68 تقريبا
-                     content = content.replace("]", ")")
-                     modified = True
-
-            # إصلاح (جديد.py) - النص المفتوح
-            # نحاول نقفل أي سترينج مفتوح في السطر 29
-            # (صعب برمجيا، لكن بنضيف " في نهاية الملف احتياط لو كان الخطأ في اخره)
-            # أو الأفضل: نتجاوز الملف هذا
-
+            
             if modified:
                 with open(name, "w", encoding='utf-8') as f:
                     f.write(content)
         except: pass
-        # ========================================================
 
         with open(name) as f:
             path1 = Path(f.name)
@@ -244,7 +227,6 @@ async def load_plugins(folder, extfolder=None):
                             if shortname in failure:
                                 failure.remove(shortname)
                             success += 1
-                            # LOGS.info(f"تم تحميل {shortname}")
                             break
                         except ModuleNotFoundError as e:
                             install_pip(e.name)
@@ -254,14 +236,8 @@ async def load_plugins(folder, extfolder=None):
                             if check > 5:
                                 break
                         except AttributeError as ae:
-                            # اذا الخطأ ar_cmd، نصلحه فوري
-                            if "ar_cmd" in str(ae):
-                                setattr(zedub, "ar_cmd", zedub.on)
-                                continue # نعيد المحاولة
-                            
-                            LOGS.info(f"متغير ناقص في {shortname}: {ae}")
-                            var_name = str(ae).split("'")[-2]
-                            setattr(Config, var_name, None)
+                            # لو رجع خطأ ar_cmd، الدالة فوق بتصلحه، هنا نتجاوز بس
+                            LOGS.info(f"خطأ في {shortname}: {ae}")
                             failure.append(shortname)
                             break
                         except Exception as e:
@@ -287,6 +263,7 @@ async def load_plugins(folder, extfolder=None):
         except: pass
 
 async def verifyLoggerGroup():
+    # كود القناة (زي ما هو)
     logger_id_str = os.environ.get("PRIVATE_GROUP_ID")
     if not logger_id_str: return
     try:
