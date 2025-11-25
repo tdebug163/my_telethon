@@ -3,6 +3,7 @@ import asyncio
 import os
 import sys
 import urllib.request
+from zthon.core.session import zedub as client
 from datetime import timedelta
 
 from telethon import events
