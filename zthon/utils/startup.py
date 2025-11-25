@@ -5,7 +5,7 @@ import asyncio
 from pathlib import Path
 from telethon import Button, functions, types, utils
 from telethon.tl.functions.channels import JoinChannelRequest, EditTitleRequest, EditPhotoRequest, EditAdminRequest
-from telethon.tl.functions.photos import UploadProfilePhotoRequest 
+from telethon.tl.functions.photos import UploadProfilePhotoRequest
 from telethon.tl.types import ChatAdminRights
 
 from zthon import BOTLOG, BOTLOG_CHATID, PM_LOGGER_GROUP_ID
@@ -25,12 +25,12 @@ ENV = bool(os.environ.get("ENV", False))
 LOGS = logging.getLogger("zthon")
 
 # ==============================================================================
-# mikey: 💉 الحقن الإجباري المباشر (The Force Injector) 💉
-# هذه الدالة تحقن المتغيرات في الكلاس مباشرة في الذاكرة
+# mikey: 💉 الحقن الإجباري المباشر (تحديث شامل للمتغيرات الناقصة) 💉
 # ==============================================================================
 def force_inject_config():
-    # قائمة المتغيرات الناقصة اللي طلعت في اللوج
+    # القائمة الذهبية (القديمة + الـ 4 جدد)
     MISSING_VARS = {
+        # --- الأساسيات اللي حليناها قبل ---
         "SPAMWATCH_API": None,
         "TMP_DOWNLOAD_DIRECTORY": "./downloads/",
         "TEMP_DIR": "./downloads/",
@@ -48,17 +48,26 @@ def force_inject_config():
         "WEATHER_API": None,
         "VIRUS_API_KEY": None,
         "ZEDUBLOGO": None,
-        "THUMB_IMAGE": "https://graph.org/file/5340a83ac9ca428089577.jpg"
+        "THUMB_IMAGE": "https://graph.org/file/5340a83ac9ca428089577.jpg",
+        
+        # --- الإضافات الجديدة (عشان الـ 4 ملفات الباقية) ---
+        "DEFAULT_BIO": "Refz User - @def_Zoka",  # حل مشكلة الانتحال
+        "OLDZED": [],                             # حل مشكلة التحديث
+        "FINISHED_PROGRESS_STR": "▓",             # حل مشكلة الضغط
+        "UNFINISHED_PROGRESS_STR": "░",           # تكملة للضغط
+        "TELEGRAPH_SHORT_NAME": "RefzUser",       # حل مشكلة الفارات/تليجراف
+        "TELEGRAPH_TOKEN": None,
+        "ALIVE_NAME": "Refz User"
     }
     
-    # الحقن المباشر
+    # الحقن
     for key, value in MISSING_VARS.items():
         if not hasattr(Config, key):
             setattr(Config, key, value)
 
-# تشغيل الحقن فوراً عند بدء الملف
+# تشغيل الحقن
 force_inject_config()
-cmdhr = Config.COMMAND_HAND_LER # الآن هذا السطر آمن
+cmdhr = Config.COMMAND_HAND_LER
 
 if ENV:
     VPS_NOLOAD = ["vps"]
@@ -69,8 +78,8 @@ bot = zedub
 DEV = 7422264678
 
 async def setup_bot():
-    print("mikey: 🚬 جاري التشغيل (مع الحقن المستمر)...")
-    force_inject_config() # حقن مرة ثانية للتأكيد
+    print("mikey: 🚬 التشغيل النهائي...")
+    force_inject_config()
     
     TOKEN = os.environ.get("TG_BOT_TOKEN")
     if not TOKEN:
@@ -89,6 +98,10 @@ async def setup_bot():
                 
                 try:
                     await zedub.tgbot(UpdateProfileRequest(first_name="Refz Assistant 🚬"))
+                    photo_path = "zthon/zilzal/logozed.jpg"
+                    if os.path.exists(photo_path):
+                        file = await zedub.tgbot.upload_file(photo_path)
+                        await zedub.tgbot(UploadProfilePhotoRequest(file=file))
                 except: pass
             except: pass
         
@@ -109,13 +122,13 @@ async def setup_bot():
         sys.exit()
 
 async def startupmessage():
-    force_inject_config() # حقن ثالث
+    force_inject_config()
     try:
         if Config.BOTLOG:
             await zedub.tgbot.send_file(
                 Config.BOTLOG_CHATID,
                 "https://graph.org/file/5340a83ac9ca428089577.jpg",
-                caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم تفعيل الحقن الذاتي.",
+                caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ جميع الملفات تعمل.",
                 buttons=[(Button.url("Source", "https://t.me/def_Zoka"),)],
             )
     except: pass
@@ -136,7 +149,7 @@ async def load_plugins(folder, extfolder=None):
     import glob
     import os
     
-    # الحقن الرابع والأهم (قبل التحميل مباشرة)
+    # الحقن المستمر (الضمان الأكيد)
     force_inject_config()
     
     if extfolder:
@@ -152,21 +165,22 @@ async def load_plugins(folder, extfolder=None):
     failure = []
 
     for name in files:
-        # إصلاح الملفات المعطوبة برمجياً
         try:
             with open(name, "r", encoding='utf-8', errors='ignore') as f:
                 content = f.read()
             modified = False
-            if "‚" in content: # الفاصلة
+            if "‚" in content:
                 content = content.replace("‚", ",")
                 modified = True
             if "zedub" in content and "from zthon.core.session import zedub" not in content:
                 content = "from zthon.core.session import zedub\n" + content
                 modified = True
-            if "zdthon" in content: # مشكلة bt.py
+            if "from ..Config import Config" in content:
+                content = content.replace("from ..Config import Config", "from zthon.Config import Config")
+                modified = True
+            if "zdthon" in content:
                 content = content.replace("zdthon", "zthon")
                 modified = True
-                
             if modified:
                 with open(name, "w", encoding='utf-8') as f:
                     f.write(content)
@@ -177,11 +191,8 @@ async def load_plugins(folder, extfolder=None):
             shortname = path1.stem
             pluginname = shortname.replace(".py", "")
             
-            # ---------------------------------------------------------
-            # mikey: الحقن المتكرر (لكل ملف) 💉
-            # هذا يضمن إن المتغيرات موجودة حتى لو انحذفت
+            # إعادة الحقن لكل ملف (زيادة حرص)
             force_inject_config()
-            # ---------------------------------------------------------
 
             try:
                 if (pluginname not in Config.NO_LOAD):
@@ -202,17 +213,16 @@ async def load_plugins(folder, extfolder=None):
                             if check > 5:
                                 break
                         except AttributeError as ae:
-                            # لو لسا فيه خطأ، نطبعه ونحاول نتجاوز
                             LOGS.info(f"متغير ناقص في {shortname}: {ae}")
-                            # محاولة يائسة: حقن المتغير المفقود تحديداً
-                            missing_var = str(ae).split("'")[-2]
-                            setattr(Config, missing_var, None)
+                            # محاولة تصحيح ذاتي أخير
+                            var_name = str(ae).split("'")[-2]
+                            setattr(Config, var_name, None)
                             failure.append(shortname)
                             break
                         except Exception as e:
-                            # أخطاء برمجية أخرى
-                            # LOGS.info(f"فشل {shortname}: {e}")
-                            failure.append(shortname)
+                            if shortname not in failure:
+                                failure.append(shortname)
+                            LOGS.info(f"فشل تحميل {shortname}: {e}")
                             break
                 else:
                     os.remove(Path(f"{plugin_path}/{shortname}.py"))
