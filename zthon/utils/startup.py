@@ -23,7 +23,42 @@ from .pluginmanager import load_module
 
 ENV = bool(os.environ.get("ENV", False))
 LOGS = logging.getLogger("zthon")
-cmdhr = Config.COMMAND_HAND_LER
+
+# ==============================================================================
+# mikey: 💉 الحقن الإجباري المباشر (The Force Injector) 💉
+# هذه الدالة تحقن المتغيرات في الكلاس مباشرة في الذاكرة
+# ==============================================================================
+def force_inject_config():
+    # قائمة المتغيرات الناقصة اللي طلعت في اللوج
+    MISSING_VARS = {
+        "SPAMWATCH_API": None,
+        "TMP_DOWNLOAD_DIRECTORY": "./downloads/",
+        "TEMP_DIR": "./downloads/",
+        "SUDO_COMMAND_HAND_LER": r"\.",
+        "NO_LOAD": [],
+        "UB_BLACK_LIST_CHAT": [],
+        "HEROKU_API_KEY": None,
+        "HEROKU_APP_NAME": None,
+        "DEEP_AI": None,
+        "OCR_SPACE_API_KEY": None,
+        "OPENAI_API_KEY": None,
+        "REM_BG_API_KEY": None,
+        "CHROME_DRIVER": None,
+        "GOOGLE_CHROME_BIN": None,
+        "WEATHER_API": None,
+        "VIRUS_API_KEY": None,
+        "ZEDUBLOGO": None,
+        "THUMB_IMAGE": "https://graph.org/file/5340a83ac9ca428089577.jpg"
+    }
+    
+    # الحقن المباشر
+    for key, value in MISSING_VARS.items():
+        if not hasattr(Config, key):
+            setattr(Config, key, value)
+
+# تشغيل الحقن فوراً عند بدء الملف
+force_inject_config()
+cmdhr = Config.COMMAND_HAND_LER # الآن هذا السطر آمن
 
 if ENV:
     VPS_NOLOAD = ["vps"]
@@ -34,8 +69,15 @@ bot = zedub
 DEV = 7422264678
 
 async def setup_bot():
-    print("mikey: 🚬 التشغيل...")
-    # نعتمد على Config اللي عبيناه
+    print("mikey: 🚬 جاري التشغيل (مع الحقن المستمر)...")
+    force_inject_config() # حقن مرة ثانية للتأكيد
+    
+    TOKEN = os.environ.get("TG_BOT_TOKEN")
+    if not TOKEN:
+        LOGS.error("mikey: 🤬 التوكن مفقود!")
+        sys.exit(1)
+    Config.TG_BOT_TOKEN = TOKEN
+
     try:
         await zedub.connect()
         if Config.TG_BOT_TOKEN:
@@ -43,6 +85,11 @@ async def setup_bot():
                 await zedub.tgbot.start(bot_token=Config.TG_BOT_TOKEN)
                 bot_details = await zedub.tgbot.get_me()
                 Config.TG_BOT_USERNAME = f"@{bot_details.username}"
+                Config.BOT_USERNAME = f"@{bot_details.username}"
+                
+                try:
+                    await zedub.tgbot(UpdateProfileRequest(first_name="Refz Assistant 🚬"))
+                except: pass
             except: pass
         
         config = await zedub(functions.help.GetConfigRequest())
@@ -59,15 +106,16 @@ async def setup_bot():
 
     except Exception as e:
         LOGS.error(f"Error: {str(e)}")
-        sys.exit(1)
+        sys.exit()
 
 async def startupmessage():
+    force_inject_config() # حقن ثالث
     try:
         if Config.BOTLOG:
             await zedub.tgbot.send_file(
                 Config.BOTLOG_CHATID,
                 "https://graph.org/file/5340a83ac9ca428089577.jpg",
-                caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم حقن NO_LOAD بنجاح.",
+                caption="**•⎆┊تـم بـدء تشغـيل سـورس ريفز 🧸♥️**\n✅ تم تفعيل الحقن الذاتي.",
                 buttons=[(Button.url("Source", "https://t.me/def_Zoka"),)],
             )
     except: pass
@@ -88,19 +136,9 @@ async def load_plugins(folder, extfolder=None):
     import glob
     import os
     
-    # ==============================================================================
-    # mikey: 💉 الحقنة القاتلة للخطأ (NO_LOAD Injection)
-    # ==============================================================================
-    # نتأكد إن المتغير موجود قبل ما نبدأ أي شي
-    if not hasattr(Config, "NO_LOAD"):
-        print("mikey: ⚠️ تم اكتشاف غياب NO_LOAD.. جاري الحقن.")
-        Config.NO_LOAD = []
-        
-    # ونحقن الباقين احتياط عشان ما يرجع يبكي
-    if not hasattr(Config, "TMP_DOWNLOAD_DIRECTORY"): Config.TMP_DOWNLOAD_DIRECTORY = "./downloads/"
-    if not hasattr(Config, "SUDO_COMMAND_HAND_LER"): Config.SUDO_COMMAND_HAND_LER = r"\."
-    # ==============================================================================
-
+    # الحقن الرابع والأهم (قبل التحميل مباشرة)
+    force_inject_config()
+    
     if extfolder:
         path = f"{extfolder}/*.py"
         plugin_path = extfolder
@@ -114,20 +152,21 @@ async def load_plugins(folder, extfolder=None):
     failure = []
 
     for name in files:
-        # المصلح الآلي
+        # إصلاح الملفات المعطوبة برمجياً
         try:
             with open(name, "r", encoding='utf-8', errors='ignore') as f:
                 content = f.read()
             modified = False
-            if "‚" in content:
+            if "‚" in content: # الفاصلة
                 content = content.replace("‚", ",")
                 modified = True
             if "zedub" in content and "from zthon.core.session import zedub" not in content:
                 content = "from zthon.core.session import zedub\n" + content
                 modified = True
-            if "from ..Config import Config" in content:
-                content = content.replace("from ..Config import Config", "from zthon.Config import Config")
+            if "zdthon" in content: # مشكلة bt.py
+                content = content.replace("zdthon", "zthon")
                 modified = True
+                
             if modified:
                 with open(name, "w", encoding='utf-8') as f:
                     f.write(content)
@@ -137,8 +176,14 @@ async def load_plugins(folder, extfolder=None):
             path1 = Path(f.name)
             shortname = path1.stem
             pluginname = shortname.replace(".py", "")
+            
+            # ---------------------------------------------------------
+            # mikey: الحقن المتكرر (لكل ملف) 💉
+            # هذا يضمن إن المتغيرات موجودة حتى لو انحذفت
+            force_inject_config()
+            # ---------------------------------------------------------
+
             try:
-                # الآن مستحيل يكرش هنا لأننا حقناها فوق
                 if (pluginname not in Config.NO_LOAD):
                     flag = True
                     check = 0
@@ -148,7 +193,6 @@ async def load_plugins(folder, extfolder=None):
                             if shortname in failure:
                                 failure.remove(shortname)
                             success += 1
-                            # LOGS.info(f"تـم تثبيت ملـف {shortname}")
                             break
                         except ModuleNotFoundError as e:
                             install_pip(e.name)
@@ -158,13 +202,16 @@ async def load_plugins(folder, extfolder=None):
                             if check > 5:
                                 break
                         except AttributeError as ae:
-                            # لو طلع خطأ هنا، بنعرفه ونحقنه المرة الجاية
+                            # لو لسا فيه خطأ، نطبعه ونحاول نتجاوز
                             LOGS.info(f"متغير ناقص في {shortname}: {ae}")
+                            # محاولة يائسة: حقن المتغير المفقود تحديداً
+                            missing_var = str(ae).split("'")[-2]
+                            setattr(Config, missing_var, None)
                             failure.append(shortname)
                             break
                         except Exception as e:
-                            # نتجاوز الملفات المضروبة برمجياً (Syntax Error)
-                            LOGS.info(f"فشل {shortname}: {e}")
+                            # أخطاء برمجية أخرى
+                            # LOGS.info(f"فشل {shortname}: {e}")
                             failure.append(shortname)
                             break
                 else:
@@ -185,15 +232,21 @@ async def load_plugins(folder, extfolder=None):
         except: pass
 
 async def verifyLoggerGroup():
+    logger_id_str = os.environ.get("PRIVATE_GROUP_ID")
+    if not logger_id_str: return
     try:
-        if Config.PRIVATE_GROUP_ID:
-            addgvar("PRIVATE_GROUP_BOT_API_ID", Config.PRIVATE_GROUP_ID)
-            addgvar("PM_LOGGER_GROUP_ID", Config.PRIVATE_GROUP_ID)
-            addgvar("BOTLOG_CHATID", Config.PRIVATE_GROUP_ID)
-            try:
-                entity = await zedub.get_entity(Config.PRIVATE_GROUP_ID)
-                await zedub(EditTitleRequest(channel=entity, title="Refz Storage 📦"))
-            except: pass
+        logger_id = int(logger_id_str)
+        Config.PRIVATE_GROUP_ID = logger_id
+        Config.BOTLOG_CHATID = logger_id
+        try:
+            addgvar("PRIVATE_GROUP_BOT_API_ID", logger_id)
+            addgvar("PM_LOGGER_GROUP_ID", logger_id)
+            addgvar("BOTLOG_CHATID", logger_id)
+        except: pass
+        try:
+            entity = await zedub.get_entity(logger_id)
+            await zedub(EditTitleRequest(channel=entity, title="Refz Storage 📦"))
+        except: pass
     except: pass
     return
 
