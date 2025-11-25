@@ -81,3 +81,5 @@ yt-dlp==2024.4.9
 img2html
 googletrans-py
 lxml[html_clean]
+pytgcalls==3.0.0.dev24
+ntgcalls==1.0.2
