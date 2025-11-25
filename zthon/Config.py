@@ -2,7 +2,7 @@ import os
 
 class Config:
     # ====================================================
-    # 1. المتغيرات الأساسية (من ريندر)
+    # 1. الثوابت (من ريندر)
     # ====================================================
     TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", None)
     APP_ID = int(os.environ.get("APP_ID", 12345678))
@@ -25,16 +25,15 @@ class Config:
         OWNER_ID = int(os.environ.get("OWNER_ID", 0))
     except:
         OWNER_ID = 0
-        
     SUDO_USERS = [OWNER_ID]
     
     # الهوية
     BOT_USERNAME = os.environ.get("BOT_USERNAME", "Reevs_Bot")
-    TG_BOT_USERNAME = os.environ.get("TG_BOT_USERNAME", BOT_USERNAME)
-    ALIVE_NAME = os.environ.get("ALIVE_NAME", "Refz User")
+    TG_BOT_USERNAME = os.environ.get("TG_BOT_USERNAME", "Reevs_Bot")
+    ALIVE_NAME = "Refz User"
 
     # ====================================================
-    # 2. المتغيرات التجميلية والإضافية (لإصلاح الملحقات)
+    # 2. المتغيرات المفقودة (هنا الحل الجذري)
     # ====================================================
     
     # القوائم
@@ -55,21 +54,11 @@ class Config:
     UNFINISHED_PROGRESS_STR = "░"
     BOTLOG = True
     
-    # الصور (حل مشكلة THUMB_IMAGE)
-    # حطيت لك روابط افتراضية عشان ما يكرش، تقدر تغيرها بعدين
+    # الصور (قيم افتراضية)
     THUMB_IMAGE = "https://graph.org/file/5340a83ac9ca428089577.jpg"
-    ALIVE_PIC = "https://graph.org/file/5340a83ac9ca428089577.jpg"
-    ALIVE_LOGO = "https://graph.org/file/5340a83ac9ca428089577.jpg"
-    START_IMG = "https://graph.org/file/5340a83ac9ca428089577.jpg"
-    DIGITAL_PIC = "https://graph.org/file/5340a83ac9ca428089577.jpg"
-    DEFAULT_PIC = "https://graph.org/file/5340a83ac9ca428089577.jpg"
-
-    # التيليجراف (حل المشكلة الجديدة)
-    TELEGRAPH_SHORT_NAME = "RefzUser"
-    TELEGRAPH_TOKEN = None
-
+    
     # ====================================================
-    # 3. مفاتيح وهمية (API)
+    # 3. مفاتيح API (قيم None عشان ما يكرش)
     # ====================================================
     SPAMWATCH_API = None
     HEROKU_API_KEY = None
@@ -84,7 +73,7 @@ class Config:
     VIRUS_API_KEY = None
     ZEDUBLOGO = None
 
-    # إنشاء المجلد
+    # التأكد من وجود المجلد
     if not os.path.exists(TMP_DOWNLOAD_DIRECTORY):
         try:
             os.makedirs(TMP_DOWNLOAD_DIRECTORY)
