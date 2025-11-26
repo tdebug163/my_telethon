@@ -64,7 +64,7 @@ async def d(message):
 
 @zthon.ar_cmd(
     pattern="انشاء حساب(?:\s|$)([\s\S]*)",
-    command=("انشاء حساب", plugin_category),
+    pattern=("انشاء حساب", plugin_category),
 )
 async def start(event):
     me = await event.client.get_me()
