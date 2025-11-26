@@ -21,7 +21,7 @@ from barcode.writer import ImageWriter
 from bs4 import BeautifulSoup
 from PIL import Image, ImageColor
 from telethon.errors.rpcerrorlist import YouBlockedUserError
-from zdthon import zthon
+from zthon.core.session import zedub as zthon
 from ..Config import Config
 from ..core.logger import logging
 from ..core.managers import edit_delete, edit_or_reply
