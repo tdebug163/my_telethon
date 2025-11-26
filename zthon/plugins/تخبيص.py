@@ -1,67 +1,78 @@
 import re
-
 from telethon import Button, events
 from telethon.events import CallbackQuery
-from ..core import check_owner, pool
 
-from . import zedub
+# mikey: تصحيح الاستدعاءات
+from zthon.core.logger import logging
+from zthon.core.managers import check_owner
+from zthon.core.session import zedub
+from zthon.Config import Config
 
-from ..Config import Config
-from . import mention
-HELP = f"**🧑🏻‍💻┊مـࢪحبـاً عـزيـزي {mention}**\n**🛂┊في قائمـة المسـاعـده والشـروحـات\n🛃┊ من هنـا يمكنـك ايجـاد شـرح لسينزر وزوكا**\n\n[ᯓ 𝐑𝐄𝐅𝐙 𝗨𝘀𝗲𝗿𝗯𝗼𝘁 ♥️](https://t.me/def_Zoka)\n\n"
+# تعريف المتغيرات الناقصة
+try:
+    tgbot = zedub.tgbot
+except:
+    tgbot = None
 
+# تعريف mention للاستخدام في النص
+async def get_mention():
+    try:
+        me = await zedub.get_me()
+        return f"[{me.first_name}](tg://user?id={me.id})"
+    except:
+        return "عزيزي"
+
+HELP_TEXT = "**🧑🏻‍💻┊مـࢪحبـاً عـزيـزي**\n**🛂┊في قائمـة المسـاعـده والشـروحـات\n🛃┊ من هنـا يمكنـك ايجـاد شـرح لسينزر وزوكا**\n\n[ᯓ 𝐑𝐄𝐅𝐙 𝗨𝘀𝗲𝗿𝗯𝗼𝘁 ♥️](https://t.me/def_Zoka)\n\n"
 
 if Config.TG_BOT_USERNAME is not None and tgbot is not None:
-
     @tgbot.on(events.InlineQuery)
-    @check_owner
     async def inline_handler(event):
         builder = event.builder
         result = None
         query = event.text
-        await zedub.get_me()
         if query.startswith("جديد") and event.query.user_id == zedub.uid:
+            # mikey: تصحيح الأقواس هنا
             buttons = [
-                [Button.inline("االمطورين", data="zdownload")
-                
-                [
-                    Button.inline("امطورين ريفز", data="zmusic"),
-                ],
+                [Button.inline("المطورين", data="zdownload")],
+                [Button.inline("مطورين ريفز", data="zmusic")],
             ]
             result = builder.article(
                 title="zedub",
-                text=HELP,
+                text=HELP_TEXT,
                 buttons=buttons,
                 link_preview=False,
             )
-        await event.answer([result] if result else None)
-
+            await event.answer([result] if result else None)
 
 @zedub.zed_cmd(pattern="جديد")
 async def help(event):
     if event.reply_to_msg_id:
         await event.get_reply_message()
-    response = await zedub.inline_query(Config.TG_BOT_USERNAME, "مساعده")
-    await response[0].click(event.chat_id)
-    await event.delete()
-
+    try:
+        # نتأكد ان البوت مفعل الانلاين
+        response = await zedub.inline_query(Config.TG_BOT_USERNAME, "جديد")
+        await response[0].click(event.chat_id)
+        await event.delete()
+    except Exception as e:
+        await event.edit(f"❌ تأكد من تفعيل وضع الانلاين للبوت المساعد: {e}")
 
 @zedub.tgbot.on(CallbackQuery(data=re.compile(rb"ZEDHELP")))
-@check_owner
 async def _(event):
+    # التحقق من المالك
+    if event.query.user_id != zedub.uid:
+        return await event.answer("هذا الأمر يخص المالك فقط!", alert=True)
+        
     butze = [
         [Button.inline("البـحـث والتحميـل 🪄", data="zdownload")],
-    [
-        [
-            Button.inline("اوامر جديده", data="zmusic"),
-        ],
+        [Button.inline("اوامر جديده", data="zmusic")],
     ]
-    await event.edit(HELP, buttons=butze, link_preview=False)
-
+    await event.edit(HELP_TEXT, buttons=butze, link_preview=False)
 
 @zedub.tgbot.on(CallbackQuery(data=re.compile(rb"zmusic")))
-@check_owner
 async def zed_help(event):
+    if event.query.user_id != zedub.uid:
+        return
+        
     zelzal = (
         "⤶ عـذراً عـزيـزي 🤷🏻‍♀\n"
         "⤶ هـذه اللوحه لا تشتغل في الخاص\n"
@@ -82,8 +93,8 @@ async def zed_help(event):
         await event.answer(zelzal, cache_time=0, alert=True)
 
 @zedub.tgbot.on(CallbackQuery(data=re.compile(rb"zzcall")))
-@check_owner
 async def _(event):
+    if event.query.user_id != zedub.uid: return
     await event.edit(
         """[ᯓ 𝐑𝐄𝐅𝐙 𝗨𝘀𝗲𝗿𝗯𝗼𝘁 - اوامر جايه 🎸](t.me/def_Zoka) .
 **- الامـر :**
@@ -97,8 +108,8 @@ async def _(event):
     link_preview=False)
 
 @zedub.tgbot.on(CallbackQuery(data=re.compile(rb"zzmusic")))
-@check_owner
 async def _(event):
+    if event.query.user_id != zedub.uid: return
     await event.edit(
         """[ᯓ 𝐑𝐄𝐅𝐙 𝗨𝘀𝗲𝗿𝗯𝗼𝘁 - اوامــر المكالمـات والميـوزك 🎸](t.me/def_Zoka) .
 **- الامـر :**
@@ -126,8 +137,8 @@ async def _(event):
     link_preview=False)
 
 @zedub.tgbot.on(CallbackQuery(data=re.compile(rb"zchatgpt")))
-@check_owner
 async def _(event):
+    if event.query.user_id != zedub.uid: return
     await event.edit(
         """[ᯓ 𝐑𝐄𝐅𝐙 𝗨𝘀𝗲𝗿𝗯𝗼𝘁 - اوامــر الذكـاء الاصطنـاعـي 🛸](t.me/def_Zoka) .
 **- الامـر :**
@@ -152,8 +163,8 @@ async def _(event):
 
 ############ البوت ############
 @zedub.tgbot.on(CallbackQuery(data=re.compile(rb"botvr")))
-@check_owner
 async def _(event):
+    if event.query.user_id != zedub.uid: return
     zelzal = "⤶ عـذراً عـزيـزي 🤷🏻‍♀\n⤶ هـذه اللوحه لا تشتغل في الخاص\n⤶ لـ إظهـار لوحـة المسـاعـدة 👇\n\n⤶ ارســل (.مساعده) في اي مجمـوعـه"
     try:
         await event.edit(
