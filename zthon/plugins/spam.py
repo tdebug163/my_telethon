@@ -1,6 +1,7 @@
 
 import asyncio
 import os
+from zthon.core.session import zedub as zthon
 from telethon import functions, types
 from . import *
 
