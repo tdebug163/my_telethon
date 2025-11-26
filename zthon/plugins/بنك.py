@@ -19,24 +19,17 @@ plugin_category = "utils"
 t = {}
 #--------------#
 def convert(seconds): 
-
     seconds = seconds % (24 * 3600) 
-
     seconds %= 3600
-
     minutes = seconds // 60
-
     seconds %= 60
-
     return "%02d:%02d" % (minutes, seconds)
 
 @zthon.ar_cmd(pattern="tdata")
-
 async def td(event):
     return await edit_or_reply(event, str(t))
 
 @zthon.ar_cmd(pattern="توب الفلوس(.*)")
-   
 async def d(message):
     users = des_bank()
     if not users:
@@ -46,12 +39,10 @@ async def d(message):
     for i in users:
         count += 1
         list += f'**{count} -** [{i.first_name}](tg://user?id={i.user_id}) {i.balance} 💵\n'
-        
+
     await edit_or_reply(message, list)
-    #return await edit_or_reply(message, str(des_bank()))
 
 @zthon.ar_cmd(pattern="مسح حسابي(.*)")
-   
 async def d(message):
     me = await message.client.get_me()
     acc = get_bank(me.id)
@@ -62,15 +53,16 @@ async def d(message):
         await message.delete()
         await message.client.send_message(message.chat_id, "تم حذف حسابك المصرفي")
 
+# mikey: هنا كان الخطأ، غيرنا الثانية لـ command
 @zthon.ar_cmd(
     pattern="انشاء حساب(?:\s|$)([\s\S]*)",
-    pattern=("انشاء حساب", plugin_category),
+    command=("انشاء حساب", plugin_category),
 )
 async def start(event):
     me = await event.client.get_me()
-    sta = await edit_or_reply(event, f"""</strong>
-
-👋  {me.first_name} مرحبًا
+    # ضبطت لك الـ HTML المعوق حقه
+    sta = await edit_or_reply(event, f"""
+👋 <strong>{me.first_name}</strong> مرحبًا
  ━━━━━━━━━━━━━━━━━
 - لأنشاء حساب اختر احد المصاريف الاتية
 
@@ -78,9 +70,7 @@ async def start(event):
 
 - .انشاء حساب الرافدين
  ━━━━━━━━━━━━━━━━━
-
-</strong>""",parse_mode="html")
-
+""", parse_mode="html") 
 
 
 @zthon.on(admin_cmd(pattern="(فلوسي|اموالي) ?(.*)"))
