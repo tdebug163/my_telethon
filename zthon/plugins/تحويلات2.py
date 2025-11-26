@@ -7,6 +7,7 @@ import io
 import logging
 import os
 import time
+from zthon.core.session import zedub
 from datetime import datetime
 from io import BytesIO
 from shutil import copyfile
