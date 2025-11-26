@@ -10,10 +10,9 @@ from telethon.tl.functions.phone import InviteToGroupCallRequest as invitetovc
 
 import os
 try:
-    import pytgcalls
-except ModuleNotFoundError:
-    os.system("pip3 install pytgcalls")
-    import pytgcalls
+    from pytgcalls import idle
+except ImportError:
+    from pytgcalls.types import idle
 
 from pytgcalls import idle
 from pytgcalls import PyTgCalls
